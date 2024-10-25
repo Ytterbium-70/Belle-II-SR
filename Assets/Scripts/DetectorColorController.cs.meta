@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 45d66987f7276ae4c9fbf5efc98d1968
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - MeshObj: {instanceID: 0}
+  - fadeMat: {fileID: 2100000, guid: 250299cdcdad58149832b1a3f84b2c00, type: 2}
+  - opaqueMat: {fileID: 2100000, guid: 0757f73e9b5ef24498c42a1179296ee6, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
