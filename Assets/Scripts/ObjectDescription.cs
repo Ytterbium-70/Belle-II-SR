@@ -17,13 +17,16 @@ public class ObjectDescription : MonoBehaviour
 
     PhysicalHandEvents PHE;
 
+    [SerializeField] float spawnDelay = 1f;
+
     private void Start()
     {
         //add itself to the Physical Hand Events
         PHE = gameObject.GetComponent<PhysicalHandEvents>();
         if (PHE != null)
         {
-            PHE.onGrabEnter.AddListener(DisplayDescription);
+            PHE.onGrab.AddListener(DisplayDescription);
+            PHE.onGrabExit.AddListener(ResetSpawnDelay);
         }
 
         string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -38,13 +41,24 @@ public class ObjectDescription : MonoBehaviour
 
     public void DisplayDescription(ContactHand hand)
     {
-        if (PUM != null)
+        spawnDelay -= Time.deltaTime; //only spawn if the player grabs the object for more than 1s to avoid unintentional spawning
+        if (spawnDelay <= 0f) 
         {
-            PUM.SpawnPopUp(ID, descriptions[PUM.languageIndex]);
+            spawnDelay = 1f;
+
+            if (PUM != null)
+            {
+                PUM.SpawnPopUp(ID, descriptions[PUM.languageIndex]);
+            }
+            else
+            {
+                Debug.Log("PopUpManager not found");
+            }
         }
-        else 
-        {
-            Debug.Log("PopUpManager not found");
-        }
+    }
+
+    void ResetSpawnDelay(ContactHand hand)
+    {
+        spawnDelay = 1f;
     }
 }

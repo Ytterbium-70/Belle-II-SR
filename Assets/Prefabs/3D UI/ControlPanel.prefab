@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5578078285671085594}
   - component: {fileID: 8830817097465061589}
   - component: {fileID: 5598657490608917657}
+  - component: {fileID: 7804595255750337813}
   m_Layer: 6
   m_Name: DownButton
   m_TagString: Untagged
@@ -94,7 +95,19 @@ MonoBehaviour:
       m_Calls: []
   OnHandContact:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7804595255750337813}
+        m_TargetAssemblyTypeName: UIColorController, Assembly-CSharp
+        m_MethodName: Highlight
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnHandContactExit:
     m_PersistentCalls:
       m_Calls:
@@ -122,6 +135,23 @@ MonoBehaviour:
   OnHandPrimaryHoverExit:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7804595255750337813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1409199774654281246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 279b7a79b5c7f624891aa60df39be2e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultColor: {r: 0.5019608, g: 0.5019608, b: 1, a: 1}
+  highlightColor: {r: 0, g: 1, b: 1, a: 1}
+  states: 
+  colForEachState: []
+  MeshObj: {fileID: 1422487264180323475}
 --- !u!1 &2848301844710439800
 GameObject:
   m_ObjectHideFlags: 0
@@ -357,6 +387,7 @@ GameObject:
   - component: {fileID: 2062389759592563539}
   - component: {fileID: 6107079159185523094}
   - component: {fileID: 2174844150740414518}
+  - component: {fileID: 7660020848207282033}
   m_Layer: 6
   m_Name: UpButton
   m_TagString: Untagged
@@ -440,7 +471,19 @@ MonoBehaviour:
       m_Calls: []
   OnHandContact:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7660020848207282033}
+        m_TargetAssemblyTypeName: UIColorController, Assembly-CSharp
+        m_MethodName: Highlight
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnHandContactExit:
     m_PersistentCalls:
       m_Calls:
@@ -468,6 +511,23 @@ MonoBehaviour:
   OnHandPrimaryHoverExit:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7660020848207282033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4574362631877003469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 279b7a79b5c7f624891aa60df39be2e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultColor: {r: 0.5019608, g: 0.5019608, b: 1, a: 1}
+  highlightColor: {r: 0, g: 1, b: 1, a: 1}
+  states: 
+  colForEachState: []
+  MeshObj: {fileID: 6389895535842330220}
 --- !u!1 &4951016008782447846
 GameObject:
   m_ObjectHideFlags: 0

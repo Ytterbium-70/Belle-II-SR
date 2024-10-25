@@ -8,6 +8,9 @@ using UnityEngine.Events;
 public class UIColorController : MonoBehaviour
 {
     public Color defaultColor;
+    public Color highlightColor;
+    Color currentColor;
+
     public List<GameStates> states;
     public List<Color> colForEachState;
 
@@ -16,6 +19,9 @@ public class UIColorController : MonoBehaviour
 
     GameManager gm;
     GameStates lastGS;
+
+    float highlightDelay;
+
     void Start()
     {
         gm = GameObject.FindGameObjectWithTag("Managers").GetComponent<GameManager>();
@@ -28,18 +34,29 @@ public class UIColorController : MonoBehaviour
         if (states.Contains(lastGS))
         {
             int index = states.FindIndex(x => x == lastGS);
-            m.color = colForEachState[index];
+            currentColor = colForEachState[index];
         }
         else
         {
-            m.color = defaultColor;
             //use default color
+            currentColor = defaultColor;
         }
+        m.color = currentColor;
     }
 
     void Update()
     {
         ChangeColorWithState();
+
+        highlightDelay -= Time.deltaTime;
+        if (highlightDelay > 0)
+        {
+            m.color = highlightColor;
+        }
+        else 
+        {
+            m.color = currentColor;
+        }
     }
 
     void ChangeColorWithState() 
@@ -52,17 +69,17 @@ public class UIColorController : MonoBehaviour
             if (states.Contains(lastGS))
             {
                 int index = states.FindIndex(x => x == lastGS);
-                m.color = colForEachState[index];
+                currentColor = colForEachState[index];
             }
             else
             {
-                m.color = defaultColor;
                 //use default color
+                currentColor = defaultColor;
             }
         }
     }
-    public void ChangeColor() 
+    public void Highlight() 
     {
-
+        highlightDelay = 0.1f;
     }
 }
