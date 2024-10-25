@@ -9,6 +9,7 @@ public class RingCreator : MonoBehaviour
     [Range(0f, 10f)] public float radius = 1f;
     public int segmentsPerRadius = 32;
 
+    int extraSegments;
 
     LineRenderer lr;
 
@@ -19,8 +20,19 @@ public class RingCreator : MonoBehaviour
 
     void Update()
     {
-        int segCount = Mathf.RoundToInt(angle / 360f * segmentsPerRadius * radius) + 1;
-        lr.positionCount = segCount + 1;
+        int segCount = Mathf.RoundToInt(angle / 360f * segmentsPerRadius * radius);
+        if (angle < 360f)
+        {
+            lr.loop = false;
+            extraSegments = 1;
+        }
+        else 
+        {
+            lr.loop = true;
+            extraSegments = 0;
+        }
+
+        lr.positionCount = segCount + extraSegments;
 
         for (int i = 0; i < lr.positionCount; i++)
         {
