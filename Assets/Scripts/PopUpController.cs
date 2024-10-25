@@ -5,6 +5,7 @@ using UnityEngine;
 //This script is mainly used to move the pop-ups around the player
 public class PopUpController : MonoBehaviour
 {
+    [Header("Movement Settings")]
     public float moveForce = 1f;
     public float rotSpeed = 30f;
 
@@ -12,15 +13,20 @@ public class PopUpController : MonoBehaviour
     Transform player;
     Rigidbody rb;
 
+    [Header("Animation Settings")]
+    public string despawnAnimationName = "PopUp_Close";
+    Animator anim;
 
     float returnTime;
-
+    bool hasBeenClosed = false;
     void Start()
     {
         spawnPos = transform.position;
 
         player = GameObject.FindGameObjectWithTag("MainCamera").transform;
         rb = gameObject.GetComponent<Rigidbody>();
+
+        anim = gameObject.GetComponent<Animator>();
     }
 
     void Update()
@@ -74,5 +80,22 @@ public class PopUpController : MonoBehaviour
     public void Return() 
     {
         returnTime = 2f;
+    }
+
+    public void ClosePopUp() 
+    {
+        if (!hasBeenClosed) 
+        {
+            hasBeenClosed = true; //just a failsave to make sure the closing animation doesn't get played twice
+
+            anim.Play(despawnAnimationName);
+        }
+    }
+
+    public void DestroyPopUp() 
+    {
+        //spawn some kind of effect
+
+        Destroy(gameObject);
     }
 }

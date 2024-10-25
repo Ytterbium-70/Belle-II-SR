@@ -42,7 +42,8 @@ public class PopUpManager : MonoBehaviour
             //Destroy all existing pop-ups
             foreach (SpawnData sd in spawnedPopUps)
             {
-                GameObject.Destroy(sd.spawn);
+                PopUpController PUC = sd.spawn.GetComponent<PopUpController>();
+                PUC.ClosePopUp();
             }
             spawnedPopUps.Clear();
         }

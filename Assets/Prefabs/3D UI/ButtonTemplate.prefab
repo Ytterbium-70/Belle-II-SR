@@ -164,14 +164,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7008667700269528778}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.043619405, y: 3.681088e-15, z: -1.6071983e-16, w: 0.9990483}
-  m_LocalPosition: {x: -0.12887, y: -0.1055, z: -0.13512003}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7476399271157623598}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 5, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &3287883909609946214
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -261,6 +261,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultColor: {r: 0, g: 0, b: 0, a: 0}
+  highlightColor: {r: 0, g: 0, b: 0, a: 0}
   states: 
   colForEachState: []
   MeshObj: {fileID: 4620171589580884245}
