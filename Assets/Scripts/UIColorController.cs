@@ -27,6 +27,14 @@ public class UIColorController : MonoBehaviour
         gm = GameObject.FindGameObjectWithTag("Managers").GetComponent<GameManager>();
         lastGS = gm.state;
 
+        if (MeshObj == null) 
+        {
+            MeshObj = gameObject.GetComponent<MeshRenderer>(); //look on the gameobject for the meshrenderer
+            if (MeshObj == null) //look in the children if no MeshRendere was found on the object
+            {
+                MeshObj = gameObject.GetComponentInChildren<MeshRenderer>();
+            }
+        }
         m = MeshObj.material;
 
 
