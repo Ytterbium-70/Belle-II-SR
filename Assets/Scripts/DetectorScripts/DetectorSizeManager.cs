@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class DetectorSizeManager : MonoBehaviour
 {
+    [Header("General Settings")]
     public Transform detectorParent;
     public float changeSpeed = 10f;
 
+    [Header("Component and Pop-Up View Settings")]
     public float[] sizeClasses; //indicates the size of an object. the detector parent is later scaled to the size class
     public GameObject[] componentForEachSC;
     [SerializeField]List<Collider> collidersOfComponents;
@@ -16,6 +18,9 @@ public class DetectorSizeManager : MonoBehaviour
     public int currentSCIndex = 0;
     float currentScale;
     float smallestSizeClass;
+
+    [Header("Event View Settings")]
+    public float eventSizeClass = 0.06f;
 
     GameManager gm;
     float transitionDelay;
@@ -72,7 +77,7 @@ public class DetectorSizeManager : MonoBehaviour
                 if (i == currentSCIndex)
                 {
                     //only enable collider after some small delay to prevent the player from immediately grasping the next object. This should also prevent errors from occuring
-                    if(transitionDelay < 0f)
+                    if (transitionDelay < 0f)
                         collidersOfComponents[i].enabled = true;
                     DCCsforComponents[i].isHologram = false;
                 }
@@ -81,6 +86,19 @@ public class DetectorSizeManager : MonoBehaviour
                     collidersOfComponents[i].enabled = false;
                     DCCsforComponents[i].isHologram = true;
                 }
+            }
+        }
+        else if (gm.state == GameStates.EVENTS) 
+        {
+            //change size of detectorParent according to the SC
+            currentScale += (eventSizeClass - currentScale) * changeSpeed * Time.deltaTime;
+            detectorParent.localScale = Vector3.one * currentScale;
+
+            //deactivate all colliders
+            for (int i = 0; i < collidersOfComponents.Count; i++)
+            {
+                collidersOfComponents[i].enabled = false;
+                DCCsforComponents[i].isHologram = false;
             }
         }
     }

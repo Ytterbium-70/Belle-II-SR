@@ -54,7 +54,7 @@ public class EventManager : MonoBehaviour
                 }
             }
 
-            //select file and display event
+            //select file
             if (Input.GetKeyDown(KeyCode.UpArrow))
             {
                 ChangeFileIndex(+1);
@@ -63,22 +63,32 @@ public class EventManager : MonoBehaviour
             {
                 ChangeFileIndex(-1);
             }
+
+            //play event
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                //play/stop event
-                if (visualizer.state == VisualizationState.INACTIVE)
-                {
-                    PlayEvent();
-                }
-                else if (visualizer.state == VisualizationState.VISUALIZING)
-                {
-                    StopEvent();
-                }
+                PlayEvent();
+            }
+
+            //change speed
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                ChangePlaySpeed(-0.5f);
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                ChangePlaySpeed(0.5f);
+            }
+
+            //pause event
+            if (Input.GetKeyDown(KeyCode.Alpha0))
+            {
+                PauseEvent();
             }
         }
         else 
         {
-            visualizer.state = VisualizationState.INACTIVE;
+            visualizer.ChangeState(VisualizationState.INACTIVE);
         }
     }
 
@@ -90,14 +100,9 @@ public class EventManager : MonoBehaviour
 
     public void PlayEvent() 
     {
-        visualizer.state = VisualizationState.INACTIVE;
         visualizer.fileName = eventFileNames[fileIndex];
-        visualizer.state = VisualizationState.LOADING;
-    }
-
-    public void StopEvent() 
-    {
-        visualizer.state = VisualizationState.INACTIVE;
+        visualizer.ChangeState(VisualizationState.INACTIVE);
+        visualizer.ChangeState(VisualizationState.LOADING);
     }
 
     public void ChangePlaySpeed(float changeAmount) 

@@ -4,6 +4,7 @@ using UnityEngine;
 using System.IO;
 using System;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 
 [Serializable]
 public class ParticleData
@@ -39,6 +40,8 @@ public class EventVisualizer : MonoBehaviour
 {
     [Header("General Settings")]
     public VisualizationState state;
+    [SerializeField] List <VisualizationState> nextStates;
+    [SerializeField] bool canSwitchState = true;
     [Space]
     public int overlayLayer = 31;
     [Space]
@@ -86,9 +89,9 @@ public class EventVisualizer : MonoBehaviour
     public int testTrackID;
     public ParticleData testParticle;
 
-    void Start()
+    private void Start()
     {
-       
+        nextStates = new List<VisualizationState>();
     }
 
     private void Update()
@@ -99,65 +102,25 @@ public class EventVisualizer : MonoBehaviour
             testParticle = eventData[testTrackID];
         }
 
+        //switch states when all operations in a state is fully complete. Switching immediately can result in weird graphics errors, such as lire renders being left behind
+        if (nextStates.Count > 0) 
+        {
+            if (canSwitchState)
+            {
+                state = nextStates[0];
+                nextStates.RemoveAt(0);
+                canSwitchState = false;
+            }
+        }
+
         if (state == VisualizationState.INACTIVE) 
         {
-            //delete currently active visualization
-            //delete paths
-            foreach (LineRenderer lr in pathRenderers)
-            {
-                Destroy(lr.gameObject);
-            }
-
-            //delete particles
-            for (int i = 0; i < particleTypes.Length; i++)
-            {
-                if (particleTypes[i].ps != null) 
-                {
-                    //update particles
-                    if (particleTypes[i].psParticles == null || particleTypes[i].psParticles.Length < particleTypes[i].ps.main.maxParticles)
-                    {
-                        particleTypes[i].psParticles = new ParticleSystem.Particle[particleTypes[i].ps.main.maxParticles];
-                    }
-
-                    //Clear all existing particles
-                    int alivePat = particleTypes[i].ps.GetParticles(particleTypes[i].psParticles);
-                    for (int j = 0; j < alivePat; j++)
-                    {
-                        particleTypes[i].psParticles[j].startLifetime = 0f;
-                        particleTypes[i].psParticles[j].remainingLifetime = 0f;
-                    }
-
-                    //apply changes to particle system
-                    particleTypes[i].ps.SetParticles(particleTypes[i].psParticles, alivePat);
-                }
-            }
-
-            if (errorPS != null) 
-            {
-                //update error particles
-                if (errorParticles == null || errorParticles.Length < errorPS.main.maxParticles)
-                {
-                    errorParticles = new ParticleSystem.Particle[errorPS.main.maxParticles];
-                }
-                //Clear all existing error particles
-                int errorAlivePat = errorPS.GetParticles(errorParticles);
-                for (int j = 0; j < errorAlivePat; j++)
-                {
-                    errorParticles[j].startLifetime = 0f;
-                    errorParticles[j].remainingLifetime = 0f;
-                }
-                //apply changes to particle system
-                errorPS.SetParticles(errorParticles, errorAlivePat);
-            }
-
-            //delete trails
-            foreach (LineRenderer lr in particleTrails.Values) 
-            {
-                lr.positionCount = 0;
-            }
+            ResetEventVisualization();
+            canSwitchState = true;
         }
         if (state == VisualizationState.LOADING) 
         {
+            canSwitchState = false;
             //create a dictionary for the visualization
             eventStartTime = Mathf.Infinity;
             eventEndTime = -Mathf.Infinity;
@@ -165,15 +128,17 @@ public class EventVisualizer : MonoBehaviour
             CreateParticleDictionary();
             CreateTrailDictionary();
             
-            state = VisualizationState.VISUALIZING;
+            canSwitchState = true;
+            nextStates.Add(VisualizationState.VISUALIZING);
         }
         if(state == VisualizationState.VISUALIZING)
         {
+            canSwitchState = true;
             //visualize event
             LoopTime();
             VisualizeEvent();
             VisualizePaths();
-        }        
+        }
     }
 
     void CreateParticleDictionary()
@@ -391,7 +356,7 @@ public class EventVisualizer : MonoBehaviour
 
         eventFile.Close();
 
-        Debug.Log("Creating the particle dictionary took " + (Time.realtimeSinceStartup - s) + "s");
+        //Debug.Log("Creating the particle dictionary took " + (Time.realtimeSinceStartup - s) + "s");
     }
 
     void CreateTrailDictionary()
@@ -426,7 +391,7 @@ public class EventVisualizer : MonoBehaviour
             }
         }
 
-        Debug.Log("Creating the trail dictionary took " + (Time.realtimeSinceStartup - s) + "s");
+        //Debug.Log("Creating the trail dictionary took " + (Time.realtimeSinceStartup - s) + "s");
     }
 
     void VisualizePaths() 
@@ -663,6 +628,67 @@ public class EventVisualizer : MonoBehaviour
         }
     }
 
+    void ResetEventVisualization() 
+    {
+        if (!canSwitchState) 
+        {
+            Debug.Log("Resetting Event Visualization");
+            //delete currently active visualization
+            //delete paths
+            foreach (LineRenderer lr in pathRenderers)
+            {
+                Destroy(lr.gameObject);
+            }
+
+            //delete particles
+            for (int i = 0; i < particleTypes.Length; i++)
+            {
+                if (particleTypes[i].ps != null)
+                {
+                    //update particles
+                    if (particleTypes[i].psParticles == null || particleTypes[i].psParticles.Length < particleTypes[i].ps.main.maxParticles)
+                    {
+                        particleTypes[i].psParticles = new ParticleSystem.Particle[particleTypes[i].ps.main.maxParticles];
+                    }
+
+                    //Clear all existing particles
+                    int alivePat = particleTypes[i].ps.GetParticles(particleTypes[i].psParticles);
+                    for (int j = 0; j < alivePat; j++)
+                    {
+                        particleTypes[i].psParticles[j].startLifetime = 0f;
+                        particleTypes[i].psParticles[j].remainingLifetime = 0f;
+                    }
+
+                    //apply changes to particle system
+                    particleTypes[i].ps.SetParticles(particleTypes[i].psParticles, alivePat);
+                }
+            }
+
+            if (errorPS != null)
+            {
+                //update error particles
+                if (errorParticles == null || errorParticles.Length < errorPS.main.maxParticles)
+                {
+                    errorParticles = new ParticleSystem.Particle[errorPS.main.maxParticles];
+                }
+                //Clear all existing error particles
+                int errorAlivePat = errorPS.GetParticles(errorParticles);
+                for (int j = 0; j < errorAlivePat; j++)
+                {
+                    errorParticles[j].startLifetime = 0f;
+                    errorParticles[j].remainingLifetime = 0f;
+                }
+                //apply changes to particle system
+                errorPS.SetParticles(errorParticles, errorAlivePat);
+            }
+
+            //delete trails
+            foreach (LineRenderer lr in particleTrails.Values)
+            {
+                lr.positionCount = 0;
+            }
+        }
+    }
     void LoopTime()
     {
         currentTime += playbackSpeed * Time.deltaTime;
@@ -695,5 +721,19 @@ public class EventVisualizer : MonoBehaviour
             scaledCurve.AddKey(keyframe);
         }
         return scaledCurve;
+    }
+
+    public void ChangeState(VisualizationState stateToChangeTo) 
+    {
+
+        if (nextStates.Count > 0)
+        {
+            if(stateToChangeTo != nextStates[nextStates.Count - 1])
+                nextStates.Add(stateToChangeTo);
+        }
+        else 
+        {
+            nextStates.Add(stateToChangeTo);
+        }
     }
 }
