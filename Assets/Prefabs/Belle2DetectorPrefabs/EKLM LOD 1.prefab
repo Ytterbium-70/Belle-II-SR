@@ -297,7 +297,7 @@ MonoBehaviour:
   normalCol: []
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   isHologram: 1
-  hologramCol: {r: 0, g: 1, b: 1, a: 0.1254902}
+  hologramCol: {r: 0, g: 1, b: 1, a: 0.09411765}
   MeshObj: {fileID: 3160113105262110086}
   changeSpeed: 3
 --- !u!114 &-7778314737417659470
@@ -319,3 +319,4 @@ MonoBehaviour:
   - "Das ist der Endcap K<sub>L</sub> and Muon Detector (EKLM). Dieser Detektor misst
     die Energien und Impulse von K<sub>L</sub> und Myonen, den einzigen (messbaren)
     Teilchen, die diesen Detektor erreichen k\xF6nnen. "
+  spawnDelay: 1

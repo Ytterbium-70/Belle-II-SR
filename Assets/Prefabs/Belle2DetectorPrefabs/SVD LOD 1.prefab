@@ -214,7 +214,7 @@ MonoBehaviour:
   normalCol: []
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   isHologram: 1
-  hologramCol: {r: 0, g: 1, b: 1, a: 0.1254902}
+  hologramCol: {r: 0, g: 1, b: 1, a: 0.09411765}
   MeshObj: {fileID: 6874448817334821004}
   changeSpeed: 3
 --- !u!114 &-573742468839954696
@@ -234,6 +234,7 @@ MonoBehaviour:
     and has the same purpose as the PXD, to measure the tracks of charged particles. '
   - 'Das ist der Silicon Vertex Detector (SVD). Er befindet sich direkt nach dem
     PXD und hat den selben Zweck, die Vermessung der Spuren geladener Teilchen. '
+  spawnDelay: 1
 --- !u!1 &6874448817334821004
 GameObject:
   m_ObjectHideFlags: 0

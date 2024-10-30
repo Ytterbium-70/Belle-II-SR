@@ -297,6 +297,6 @@ MonoBehaviour:
   normalCol: []
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   isHologram: 1
-  hologramCol: {r: 0, g: 1, b: 1, a: 0.1254902}
+  hologramCol: {r: 0, g: 1, b: 1, a: 0.09411765}
   MeshObj: {fileID: 4095749573683539145}
   changeSpeed: 3

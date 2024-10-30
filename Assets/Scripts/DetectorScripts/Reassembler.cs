@@ -41,7 +41,7 @@ public class Reassembler : MonoBehaviour
             targetPos = transform.position;
             targetRot = transform.rotation.eulerAngles;
         }
-        targetMarker = new GameObject(this.name + "Marker").transform;
+        targetMarker = new GameObject("ReassemblerMarker (" + this.name  + ")").transform;
         targetMarker.parent = this.transform.parent;
         targetMarker.position = targetPos;
         targetMarker.rotation = Quaternion.Euler(targetRot);

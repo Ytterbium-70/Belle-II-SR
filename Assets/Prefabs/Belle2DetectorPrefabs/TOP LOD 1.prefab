@@ -214,7 +214,7 @@ MonoBehaviour:
   normalCol: []
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   isHologram: 1
-  hologramCol: {r: 0, g: 1, b: 1, a: 0.1254902}
+  hologramCol: {r: 0, g: 1, b: 1, a: 0.09411765}
   MeshObj: {fileID: 6906595476127618079}
   changeSpeed: 3
 --- !u!114 &-5985369547814177792
@@ -234,6 +234,7 @@ MonoBehaviour:
     to distinguish between different particle types. '
   - 'Das ist der Time Of Propagation Detektor (TOP). Er nutzt sogenannte Cherenkov
     Strahlung um die Art eines Teilchens zu identifizieren. '
+  spawnDelay: 1
 --- !u!1 &6906595476127618079
 GameObject:
   m_ObjectHideFlags: 0

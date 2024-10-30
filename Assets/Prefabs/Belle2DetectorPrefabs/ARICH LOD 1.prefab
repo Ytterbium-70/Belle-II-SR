@@ -214,7 +214,7 @@ MonoBehaviour:
   normalCol: []
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   isHologram: 1
-  hologramCol: {r: 0, g: 1, b: 1, a: 0.1254902}
+  hologramCol: {r: 0, g: 1, b: 1, a: 0.09411765}
   MeshObj: {fileID: 3877952193232811703}
   changeSpeed: 3
 --- !u!114 &-5584918355770106119
@@ -234,6 +234,7 @@ MonoBehaviour:
     it is responsible for particle identification with the help of Cherenkov light. '
   - 'Das ist der Aerogel Ring Imaging Cherenkov Counter (ARICH). Wie der TOP Detektor,
     nutzt er Cherenkov Strahlung um verschiedene Teilchenarten zu identifizieren. '
+  spawnDelay: 1
 --- !u!1 &3877952193232811703
 GameObject:
   m_ObjectHideFlags: 0

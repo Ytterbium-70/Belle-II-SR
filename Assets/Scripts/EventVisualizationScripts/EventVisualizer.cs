@@ -34,13 +34,13 @@ public class ParticleType
 }
 
 //Note: This script visualizes the particle events in local space
-
+public enum VisualizationState { INACTIVE, LOADING, VISUALIZING }
 public class EventVisualizer : MonoBehaviour
 {
-    public enum VisualizationState { INACTIVE, LOADING, VISUALIZING }
-
     [Header("General Settings")]
     public VisualizationState state;
+    [Space]
+    public int overlayLayer = 31;
     [Space]
     public float playbackSpeed = 0f;
     public float currentTime;
@@ -66,6 +66,7 @@ public class EventVisualizer : MonoBehaviour
     public float trailWidth = 0.1f;
     public AnimationCurve trailShape;
     public Material trailMat;
+    [Space]
     public Gradient errorTrailColor;
     Dictionary<int, LineRenderer> particleTrails = new Dictionary<int, LineRenderer>();
 
@@ -408,6 +409,7 @@ public class EventVisualizer : MonoBehaviour
                 //create line renderer
                 GameObject spawn = new GameObject(pd.particleName + ", ID:" + i.ToString());
                 spawn.transform.parent = this.transform;
+                spawn.layer = overlayLayer; //place the line renderers on a layer, so that it can be overlayed on the screen
                 spawn.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
                 spawn.transform.localRotation = Quaternion.identity;
                 spawn.transform.localScale = Vector3.one;
@@ -463,7 +465,7 @@ public class EventVisualizer : MonoBehaviour
                     lr.colorGradient = lineColor;
                     lr.useWorldSpace = false;
 
-                    float lWidth = lineWidth * lr.transform.parent.localScale.x;
+                    float lWidth = lineWidth * transform.parent.localScale.x;
                     lr.startWidth = lWidth;
                     lr.endWidth = lWidth;
 
@@ -484,7 +486,7 @@ public class EventVisualizer : MonoBehaviour
             //adjust width of existing lineRenderers
             foreach (LineRenderer lr in pathRenderers)
             {
-                float lWidth = lineWidth * lr.transform.parent.localScale.x;
+                float lWidth = lineWidth * transform.parent.localScale.x;
                 lr.startWidth = lWidth;
                 lr.endWidth = lWidth;
             }
@@ -619,7 +621,7 @@ public class EventVisualizer : MonoBehaviour
                     //visualize trail
                     LineRenderer lr = particleTrails[i];
                     lr.colorGradient = trailCol; //change trail color according to particle type
-                    lr.widthCurve = CurveScaler(trailShape, trailWidth * lr.transform.parent.localScale.x);
+                    lr.widthCurve = CurveScaler(trailShape, trailWidth * transform.parent.localScale.x);
 
                     List<Vector3> trailPos = new List<Vector3>();
                     trailPos.Add(pos);
