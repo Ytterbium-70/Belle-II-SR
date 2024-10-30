@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System;
+using UnityEditor.PackageManager;
 
 [Serializable]
 public class ParticleData
@@ -32,7 +33,7 @@ public class ParticleType
     [HideInInspector] public ParticleSystem.Particle[] psParticles;
 }
 
-//Note: From the way this script operates, it operates in local space, but only once it has been spawned. moving the parent before spawning the particle system or line renderers will result in grafic errors
+//Note: This script visualizes the particle events in local space
 public class EventVisualizer : MonoBehaviour
 {
     public float playbackSpeed = 0f;
@@ -98,6 +99,10 @@ public class EventVisualizer : MonoBehaviour
                     //create LineRenderer
                     GameObject spawn = new GameObject(pd.particleName);
                     spawn.transform.parent = this.transform;
+                    spawn.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
+                    spawn.transform.localRotation = Quaternion.identity;
+                    spawn.transform.localScale = Vector3.one;
+
                     LineRenderer lr = spawn.AddComponent<LineRenderer>();
                     lr.material = lineMat;
                     lr.colorGradient = lineColor;
@@ -309,6 +314,9 @@ public class EventVisualizer : MonoBehaviour
         {
             ParticleSystem ps = Instantiate(particleSystemTemplate, transform.position, Quaternion.identity).GetComponent<ParticleSystem>();
             ps.transform.parent = this.transform;
+            ps.transform.localPosition = Vector3.zero; //Reset transform so that the visualization runs correctly in local space. Not doing so means ou can only move the visulization after starting itw
+            ps.transform.localRotation = Quaternion.identity;
+            ps.transform.localScale = Vector3.one;
 
             Material mat = new Material(particleMat);
             mat.mainTexture = particleTypes[i].particleTexture;
@@ -321,6 +329,9 @@ public class EventVisualizer : MonoBehaviour
         //create Error ParticleSystem
         errorPS = Instantiate(particleSystemTemplate, transform.position, Quaternion.identity).GetComponent<ParticleSystem>();
         errorPS.transform.parent = this.transform;
+        errorPS.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
+        errorPS.transform.localRotation = Quaternion.identity;
+        errorPS.transform.localScale = Vector3.one;
 
         Material errorMat = new Material(particleMat);
         errorMat.mainTexture = errorTexture;
@@ -345,6 +356,9 @@ public class EventVisualizer : MonoBehaviour
                 //create line renderer
                 GameObject spawn = new GameObject(pd.particleName + ", ID:" + i.ToString());
                 spawn.transform.parent = this.transform;
+                spawn.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
+                spawn.transform.localRotation = Quaternion.identity;
+                spawn.transform.localScale = Vector3.one;
 
                 //change settings on line renderer
                 LineRenderer lr = spawn.AddComponent<LineRenderer>();

@@ -711,11 +711,11 @@ MonoBehaviour:
     times: []
     minTime: 0
     maxTime: 0
-  generateLines: 0
+  generateLines: 1
   lineColor:
     serializedVersion: 2
-    key0: {r: 1, g: 1, b: 1, a: 1}
-    key1: {r: 1, g: 1, b: 1, a: 1}
+    key0: {r: 1, g: 1, b: 1, a: 0.03137255}
+    key1: {r: 1, g: 1, b: 1, a: 0.03137255}
     key2: {r: 0, g: 0, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
@@ -742,5 +742,5 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  lineWidth: 1
+  lineWidth: 0.01
   lineMat: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
