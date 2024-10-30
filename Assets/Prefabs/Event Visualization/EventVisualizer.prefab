@@ -702,16 +702,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  fileName: event320.csv
-  extractedData: []
-  testTrackID: 0
-  testParticle:
-    particleName: 
-    points: []
-    times: []
-    minTime: 0
-    maxTime: 0
-  generateLines: 1
+  generateLines: 0
   lineColor:
     serializedVersion: 2
     key0: {r: 1, g: 1, b: 1, a: 0.03137255}
@@ -744,3 +735,12 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   lineWidth: 0.01
   lineMat: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  fileName: event320.csv
+  extractedData: []
+  testTrackID: 0
+  testParticle:
+    particleName: 
+    points: []
+    times: []
+    minTime: 0
+    maxTime: 0

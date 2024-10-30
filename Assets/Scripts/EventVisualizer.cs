@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System;
-using UnityEditor.PackageManager;
+using System.Runtime.CompilerServices;
 
 [Serializable]
 public class ParticleData
@@ -34,8 +34,14 @@ public class ParticleType
 }
 
 //Note: This script visualizes the particle events in local space
+
 public class EventVisualizer : MonoBehaviour
 {
+    public enum VisualizationState { INACTIVE, LOADING, VISUALIZING }
+
+    [Header("General Settings")]
+    public VisualizationState state;
+    [Space]
     public float playbackSpeed = 0f;
     public float currentTime;
     float eventStartTime = Mathf.Infinity;
@@ -63,6 +69,12 @@ public class EventVisualizer : MonoBehaviour
     public Gradient errorTrailColor;
     Dictionary<int, LineRenderer> particleTrails = new Dictionary<int, LineRenderer>();
 
+    [Header("Path Visualization")]
+    public bool generateLines;
+    public Gradient lineColor;
+    public float lineWidth = 1f;
+    public Material lineMat;
+
     [Header("File Management")]
     public string fileName = "event320.csv";
     public List<string> extractedData = new List<string>();
@@ -72,12 +84,6 @@ public class EventVisualizer : MonoBehaviour
     public int testTrackID;
     public ParticleData testParticle;
 
-    [Space]
-    public bool generateLines;
-    public Gradient lineColor;
-    public float lineWidth = 1f;
-    public Material lineMat;
-
     void Start()
     {
         eventStartTime = Mathf.Infinity;
@@ -85,48 +91,25 @@ public class EventVisualizer : MonoBehaviour
 
         CreateParticleDictionary();
         CreateTrailDictionary();
-
-        //visualize particle paths. Only here as a help while programming. remove later
-        if (generateLines)
-        {
-            //reconstruct paths
-            for (int i = -100; i < eventData.Count + 1; i++)
-            {
-                if (eventData.ContainsKey(i))
-                {
-                    ParticleData pd = eventData[i];
-
-                    //create LineRenderer
-                    GameObject spawn = new GameObject(pd.particleName);
-                    spawn.transform.parent = this.transform;
-                    spawn.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
-                    spawn.transform.localRotation = Quaternion.identity;
-                    spawn.transform.localScale = Vector3.one;
-
-                    LineRenderer lr = spawn.AddComponent<LineRenderer>();
-                    lr.material = lineMat;
-                    lr.colorGradient = lineColor;
-                    lr.useWorldSpace = false;
-
-                    lr.startWidth = lineWidth;
-                    lr.endWidth = lineWidth;
-
-                    lr.sortingOrder = -2;
-
-                    //Visualize Path
-                    lr.positionCount = pd.points.Count;
-                    for (int j = 0; j < pd.points.Count; j++)
-                    {
-                        lr.SetPosition(j, pd.points[j] * scale);
-                    }
-                }
-            }
-            Debug.Log("Creating the dictionary and line renderers took " + Time.realtimeSinceStartup.ToString() + "s");
-        }
+        VisualizePaths();
     }
 
     private void Update()
     {
+        if (state == VisualizationState.INACTIVE) 
+        {
+            //delete currently active visualization
+        }
+        if (state == VisualizationState.LOADING) 
+        {
+            //create a dictionary for the visualization
+            //visualize paths
+        }
+        if(state == VisualizationState.VISUALIZING)
+        {
+            //visualize event
+        }
+
         //TESTING, Remove later
         if (eventData.ContainsKey(testTrackID))
         {
@@ -145,6 +128,8 @@ public class EventVisualizer : MonoBehaviour
         string line = eventFile.ReadLine(); //skip 1st line
         line = eventFile.ReadLine();
 
+        //create a dictionary of the particles in a event. Use Track ID as key for the dictionary
+        eventData = new Dictionary<int, ParticleData>();
         while (line != null)
         {
             //extract data from 1st line
@@ -363,7 +348,6 @@ public class EventVisualizer : MonoBehaviour
                 //change settings on line renderer
                 LineRenderer lr = spawn.AddComponent<LineRenderer>();
                 lr.material = trailMat;
-                lr.widthCurve = CurveScaler(trailShape, trailWidth);
                 lr.positionCount = 0;
                 lr.useWorldSpace = false;
                 lr.sortingOrder = -1;
@@ -375,6 +359,48 @@ public class EventVisualizer : MonoBehaviour
 
 
         Debug.Log("Creating the trail dictionary took " + Time.realtimeSinceStartup.ToString() + "s");
+    }
+
+    void VisualizePaths() 
+    {
+        //visualize particle paths
+        if (generateLines)
+        {
+            //reconstruct paths
+            for (int i = -100; i < eventData.Count + 1; i++)
+            {
+                if (eventData.ContainsKey(i))
+                {
+                    ParticleData pd = eventData[i];
+
+                    //create LineRenderer
+                    GameObject spawn = new GameObject(pd.particleName + "path");
+                    spawn.transform.parent = this.transform;
+                    spawn.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
+                    spawn.transform.localRotation = Quaternion.identity;
+                    spawn.transform.localScale = Vector3.one;
+
+                    LineRenderer lr = spawn.AddComponent<LineRenderer>();
+                    lr.material = lineMat;
+                    lr.colorGradient = lineColor;
+                    lr.useWorldSpace = false;
+
+                    float lWidth = lineWidth * lr.transform.parent.localScale.x;
+                    lr.startWidth = lWidth;
+                    lr.endWidth = lWidth;
+
+                    lr.sortingOrder = -2;
+
+                    //Visualize Path
+                    lr.positionCount = pd.points.Count;
+                    for (int j = 0; j < pd.points.Count; j++)
+                    {
+                        lr.SetPosition(j, pd.points[j] * scale);
+                    }
+                }
+            }
+            Debug.Log("Creating the dictionary and line renderers took " + Time.realtimeSinceStartup.ToString() + "s");
+        }
     }
 
     void VisualizeEvent()
@@ -505,6 +531,7 @@ public class EventVisualizer : MonoBehaviour
                     //visualize trail
                     LineRenderer lr = particleTrails[i];
                     lr.colorGradient = trailCol; //change trail color according to particle type
+                    lr.widthCurve = CurveScaler(trailShape, trailWidth * lr.transform.parent.localScale.x);
 
                     List<Vector3> trailPos = new List<Vector3>();
                     trailPos.Add(pos);
