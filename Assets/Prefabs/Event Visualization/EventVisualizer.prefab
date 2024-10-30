@@ -44,9 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ec305c77fd10549b604bc73ff5bed7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playbackSpeed: 0
+  state: 0
+  playbackSpeed: 5
   currentTime: 0
-  scale: 0.001
+  scale: 0.0001
   particleTypes:
   - particleName: e-
     particleTexture: {fileID: 2800000, guid: 50df33b77aab5c141b44c2f333d8ac48, type: 3}
@@ -645,8 +646,8 @@ MonoBehaviour:
   particleSystemTemplate: {fileID: 8683114615573354246, guid: 09cf1a9d4fe787a47b55981c4049a3da, type: 3}
   particleMat: {fileID: 2100000, guid: 41c9ce8d3cf01b14485027cb0f290dea, type: 2}
   errorTexture: {fileID: 2800000, guid: 82704667a296d9c4f811ddda319af588, type: 3}
-  trailLifeTime: 4
-  trailWidth: 0.02
+  trailLifeTime: 3
+  trailWidth: 0.002
   trailShape:
     serializedVersion: 2
     m_Curve:
@@ -702,7 +703,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  generateLines: 0
+  generatePaths: 0
   lineColor:
     serializedVersion: 2
     key0: {r: 1, g: 1, b: 1, a: 0.03137255}
@@ -733,7 +734,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  lineWidth: 0.01
+  lineWidth: 0.001
   lineMat: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   fileName: event320.csv
   extractedData: []

@@ -70,10 +70,11 @@ public class EventVisualizer : MonoBehaviour
     Dictionary<int, LineRenderer> particleTrails = new Dictionary<int, LineRenderer>();
 
     [Header("Path Visualization")]
-    public bool generateLines;
+    public bool generatePaths;
     public Gradient lineColor;
     public float lineWidth = 1f;
     public Material lineMat;
+    List<LineRenderer> pathRenderers = new List<LineRenderer>();
 
     [Header("File Management")]
     public string fileName = "event320.csv";
@@ -86,42 +87,98 @@ public class EventVisualizer : MonoBehaviour
 
     void Start()
     {
-        eventStartTime = Mathf.Infinity;
-        eventEndTime = -Mathf.Infinity;
-
-        CreateParticleDictionary();
-        CreateTrailDictionary();
-        VisualizePaths();
+       
     }
 
     private void Update()
     {
-        if (state == VisualizationState.INACTIVE) 
-        {
-            //delete currently active visualization
-        }
-        if (state == VisualizationState.LOADING) 
-        {
-            //create a dictionary for the visualization
-            //visualize paths
-        }
-        if(state == VisualizationState.VISUALIZING)
-        {
-            //visualize event
-        }
-
-        //TESTING, Remove later
+        //TESTING, can be removed later
         if (eventData.ContainsKey(testTrackID))
         {
             testParticle = eventData[testTrackID];
         }
 
-        LoopTime();
-        VisualizeEvent();
+        if (state == VisualizationState.INACTIVE) 
+        {
+            //delete currently active visualization
+            //delete paths
+            foreach (LineRenderer lr in pathRenderers)
+            {
+                Destroy(lr.gameObject);
+            }
+
+            //delete particles
+            for (int i = 0; i < particleTypes.Length; i++)
+            {
+                if (particleTypes[i].ps != null) 
+                {
+                    //update particles
+                    if (particleTypes[i].psParticles == null || particleTypes[i].psParticles.Length < particleTypes[i].ps.main.maxParticles)
+                    {
+                        particleTypes[i].psParticles = new ParticleSystem.Particle[particleTypes[i].ps.main.maxParticles];
+                    }
+
+                    //Clear all existing particles
+                    int alivePat = particleTypes[i].ps.GetParticles(particleTypes[i].psParticles);
+                    for (int j = 0; j < alivePat; j++)
+                    {
+                        particleTypes[i].psParticles[j].startLifetime = 0f;
+                        particleTypes[i].psParticles[j].remainingLifetime = 0f;
+                    }
+
+                    //apply changes to particle system
+                    particleTypes[i].ps.SetParticles(particleTypes[i].psParticles, alivePat);
+                }
+            }
+
+            if (errorPS != null) 
+            {
+                //update error particles
+                if (errorParticles == null || errorParticles.Length < errorPS.main.maxParticles)
+                {
+                    errorParticles = new ParticleSystem.Particle[errorPS.main.maxParticles];
+                }
+                //Clear all existing error particles
+                int errorAlivePat = errorPS.GetParticles(errorParticles);
+                for (int j = 0; j < errorAlivePat; j++)
+                {
+                    errorParticles[j].startLifetime = 0f;
+                    errorParticles[j].remainingLifetime = 0f;
+                }
+                //apply changes to particle system
+                errorPS.SetParticles(errorParticles, errorAlivePat);
+            }
+
+            //delete trails
+            foreach (LineRenderer lr in particleTrails.Values) 
+            {
+                lr.positionCount = 0;
+            }
+        }
+        if (state == VisualizationState.LOADING) 
+        {
+            //create a dictionary for the visualization
+            eventStartTime = Mathf.Infinity;
+            eventEndTime = -Mathf.Infinity;
+
+            CreateParticleDictionary();
+            CreateTrailDictionary();
+            
+            state = VisualizationState.VISUALIZING;
+        }
+        if(state == VisualizationState.VISUALIZING)
+        {
+            //visualize event
+            LoopTime();
+            VisualizeEvent();
+            VisualizePaths();
+        }        
     }
 
     void CreateParticleDictionary()
     {
+        float s = Time.realtimeSinceStartup; //Value for debugging
+
         Directory.CreateDirectory(Application.dataPath + "/Belle2ParticleEvents/");
         StreamReader eventFile = new StreamReader(Application.dataPath + "/Belle2ParticleEvents/" + fileName);
 
@@ -132,7 +189,7 @@ public class EventVisualizer : MonoBehaviour
         eventData = new Dictionary<int, ParticleData>();
         while (line != null)
         {
-            //extract data from 1st line
+            //extract data from line
             extractedData.Clear();
 
             for (int i = 0; i < line.Length; i++)
@@ -297,44 +354,54 @@ public class EventVisualizer : MonoBehaviour
         //create a Particle System for each particle type and change its appearance
         for (int i = 0; i < particleTypes.Length; i++)
         {
-            ParticleSystem ps = Instantiate(particleSystemTemplate, transform.position, Quaternion.identity).GetComponent<ParticleSystem>();
-            ps.transform.parent = this.transform;
-            ps.transform.localPosition = Vector3.zero; //Reset transform so that the visualization runs correctly in local space. Not doing so means ou can only move the visulization after starting itw
-            ps.transform.localRotation = Quaternion.identity;
-            ps.transform.localScale = Vector3.one;
+            //check if a particle system already exists
+            if (particleTypes[i].ps == null) 
+            {
+                ParticleSystem ps = Instantiate(particleSystemTemplate, transform.position, Quaternion.identity).GetComponent<ParticleSystem>();
+                ps.transform.parent = this.transform;
+                ps.transform.localPosition = Vector3.zero; //Reset transform so that the visualization runs correctly in local space. Not doing so means ou can only move the visulization after starting itw
+                ps.transform.localRotation = Quaternion.identity;
+                ps.transform.localScale = Vector3.one;
 
-            Material mat = new Material(particleMat);
-            mat.mainTexture = particleTypes[i].particleTexture;
-            ParticleSystemRenderer psr = ps.GetComponent<ParticleSystemRenderer>();
-            psr.sharedMaterial = mat;
+                Material mat = new Material(particleMat);
+                mat.mainTexture = particleTypes[i].particleTexture;
+                ParticleSystemRenderer psr = ps.GetComponent<ParticleSystemRenderer>();
+                psr.sharedMaterial = mat;
 
-            particleTypes[i].ps = ps;
+                particleTypes[i].ps = ps;
+            }
         }
 
         //create Error ParticleSystem
-        errorPS = Instantiate(particleSystemTemplate, transform.position, Quaternion.identity).GetComponent<ParticleSystem>();
-        errorPS.transform.parent = this.transform;
-        errorPS.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
-        errorPS.transform.localRotation = Quaternion.identity;
-        errorPS.transform.localScale = Vector3.one;
+        //check if a error particle system already exists
+        if (errorPS == null) 
+        {
+            errorPS = Instantiate(particleSystemTemplate, transform.position, Quaternion.identity).GetComponent<ParticleSystem>();
+            errorPS.transform.parent = this.transform;
+            errorPS.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
+            errorPS.transform.localRotation = Quaternion.identity;
+            errorPS.transform.localScale = Vector3.one;
 
-        Material errorMat = new Material(particleMat);
-        errorMat.mainTexture = errorTexture;
-        ParticleSystemRenderer errorPsr = errorPS.GetComponent<ParticleSystemRenderer>();
-        errorPsr.sharedMaterial = errorMat;
+            Material errorMat = new Material(particleMat);
+            errorMat.mainTexture = errorTexture;
+            ParticleSystemRenderer errorPsr = errorPS.GetComponent<ParticleSystemRenderer>();
+            errorPsr.sharedMaterial = errorMat;
+        }
 
         eventFile.Close();
 
-
-        Debug.Log("Creating the particle dictionary took " + Time.realtimeSinceStartup.ToString() + "s");
+        Debug.Log("Creating the particle dictionary took " + (Time.realtimeSinceStartup - s) + "s");
     }
 
     void CreateTrailDictionary()
     {
+        float s = Time.realtimeSinceStartup; //value for debugging
+
         //create a dictionary of the particle trails
         for (int i = -100; i < eventData.Count; i++)
         {
-            if (eventData.ContainsKey(i))
+            //check wether the trail already exists or not
+            if (eventData.ContainsKey(i) && !particleTrails.ContainsKey(i))
             {
                 ParticleData pd = eventData[i];
 
@@ -357,16 +424,25 @@ public class EventVisualizer : MonoBehaviour
             }
         }
 
-
-        Debug.Log("Creating the trail dictionary took " + Time.realtimeSinceStartup.ToString() + "s");
+        Debug.Log("Creating the trail dictionary took " + (Time.realtimeSinceStartup - s) + "s");
     }
 
     void VisualizePaths() 
     {
         //visualize particle paths
-        if (generateLines)
+        if (generatePaths)
         {
-            //reconstruct paths
+            generatePaths = false;
+
+            //delete old lineRenderers
+            //This part could be replaced by a pooling system
+            foreach (LineRenderer lr in pathRenderers)
+            {
+                Destroy(lr.gameObject);
+            }
+            pathRenderers = new List<LineRenderer>();
+
+            //create new lineRenderers and reconstruct paths
             for (int i = -100; i < eventData.Count + 1; i++)
             {
                 if (eventData.ContainsKey(i))
@@ -381,6 +457,8 @@ public class EventVisualizer : MonoBehaviour
                     spawn.transform.localScale = Vector3.one;
 
                     LineRenderer lr = spawn.AddComponent<LineRenderer>();
+                    pathRenderers.Add(lr);
+
                     lr.material = lineMat;
                     lr.colorGradient = lineColor;
                     lr.useWorldSpace = false;
@@ -400,6 +478,16 @@ public class EventVisualizer : MonoBehaviour
                 }
             }
             Debug.Log("Creating the dictionary and line renderers took " + Time.realtimeSinceStartup.ToString() + "s");
+        }
+        else 
+        {
+            //adjust width of existing lineRenderers
+            foreach (LineRenderer lr in pathRenderers)
+            {
+                float lWidth = lineWidth * lr.transform.parent.localScale.x;
+                lr.startWidth = lWidth;
+                lr.endWidth = lWidth;
+            }
         }
     }
 
