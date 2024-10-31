@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//This script coltrols the size of the detector
+//It'S also responsible for any color changes that affect all detector components
 public class DetectorSizeManager : MonoBehaviour
 {
     [Header("General Settings")]
@@ -74,6 +76,8 @@ public class DetectorSizeManager : MonoBehaviour
             //change appearance and collider for the detector components
             for (int i = 0; i < collidersOfComponents.Count; i++)
             {
+                DCCsforComponents[i].alwaysHighlight = false;
+
                 if (i == currentSCIndex)
                 {
                     //only enable collider after some small delay to prevent the player from immediately grasping the next object. This should also prevent errors from occuring
@@ -94,10 +98,11 @@ public class DetectorSizeManager : MonoBehaviour
             currentScale += (eventSizeClass - currentScale) * changeSpeed * Time.deltaTime;
             detectorParent.localScale = Vector3.one * currentScale;
 
-            //deactivate all colliders
+            //deactivate all colliders and change detector appearance
             for (int i = 0; i < collidersOfComponents.Count; i++)
             {
                 collidersOfComponents[i].enabled = false;
+                DCCsforComponents[i].alwaysHighlight = true;
                 DCCsforComponents[i].isHologram = false;
             }
         }

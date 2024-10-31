@@ -15,6 +15,7 @@ public class DetectorColorController : MonoBehaviour
     List<Color> currentObjectColors = new List<Color>(); //is just the normal color + some other color
 
     [Space]
+    public bool alwaysHighlight;
     public Color defaultColor = Color.white;
     float highlightAmount; //goes from 0-1. Used to change between default color and normal color
     float highlightDelay = 0f; //highlight if this value is above 0
@@ -60,24 +61,36 @@ public class DetectorColorController : MonoBehaviour
     {
         //check if the object is highlighted
         highlightDelay -= Time.deltaTime;
-        if (highlightDelay > 0f)
+        if (!alwaysHighlight)
         {
-            for (int i = 0; i < normalCol.Count; i++)
+            if (highlightDelay > 0f)
             {
-                //change color depending on wether player is hovering, contacting or grabbing the object
-                currentObjectColors[i] = highlightAmount * normalCol[i] + (1f - highlightAmount) * defaultColor;
+                for (int i = 0; i < normalCol.Count; i++)
+                {
+                    //change color depending on wether player is hovering, contacting or grabbing the object
+                    currentObjectColors[i] = highlightAmount * normalCol[i] + (1f - highlightAmount) * defaultColor;
+                }
+            }
+            else
+            {
+                //reset highlightAmount
+                highlightAmount = 0.25f;
+
+                for (int i = 0; i < normalCol.Count; i++)
+                {
+                    currentObjectColors[i] = highlightAmount * normalCol[i] + (1f - highlightAmount) * defaultColor;
+                }
             }
         }
         else 
         {
-            //reset highlightAmount
-            highlightAmount = 0.25f;
-
             for (int i = 0; i < normalCol.Count; i++)
             {
-                currentObjectColors[i] = highlightAmount * normalCol[i] + (1f - highlightAmount) * defaultColor;
+                //use normal colors
+                currentObjectColors[i] = normalCol[i];
             }
         }
+        
 
         //change color between hologram and non-hologram color
         if (isHologram)
