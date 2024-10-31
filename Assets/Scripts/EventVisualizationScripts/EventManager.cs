@@ -4,6 +4,7 @@ using UnityEngine;
 using System.IO;
 using TMPro;
 using Leap;
+using Unity.VisualScripting;
 
 [RequireComponent(typeof(GameManager))]
 public class EventManager : MonoBehaviour
@@ -11,10 +12,15 @@ public class EventManager : MonoBehaviour
     public EventVisualizer visualizer;
 
     public string selectedFileDisplayName;
+    public TMP_Text nameText;
 
-    [SerializeField] List<string> eventFileNames;
+    [Space]
+    public float playbackSpeed = 5f;
+    bool pauseEvent = false;
+
+    List<string> eventFileNames;
     string[] eventFilePaths;
-    [SerializeField] int fileIndex;
+    int fileIndex;
 
     GameManager gm;
 
@@ -54,37 +60,27 @@ public class EventManager : MonoBehaviour
                 }
             }
 
-            //select file
-            if (Input.GetKeyDown(KeyCode.UpArrow))
+            //display file name
+            if (nameText != null)
             {
-                ChangeFileIndex(+1);
+                nameText.text = selectedFileDisplayName;
             }
-            if (Input.GetKeyDown(KeyCode.DownArrow))
+            else 
             {
-                ChangeFileIndex(-1);
-            }
-
-            //play event
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                PlayEvent();
+                Debug.Log("Text Mesh missing on EventManager");
             }
 
-            //change speed
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
+
+            if (!pauseEvent)
             {
-                ChangePlaySpeed(-0.5f);
+                visualizer.playbackSpeed = playbackSpeed;
             }
-            if (Input.GetKeyDown(KeyCode.RightArrow))
+            else 
             {
-                ChangePlaySpeed(0.5f);
+                visualizer.playbackSpeed = 0f;
             }
 
-            //pause event
-            if (Input.GetKeyDown(KeyCode.Alpha0))
-            {
-                PauseEvent();
-            }
+            KeyboardInput();
         }
         else 
         {
@@ -95,23 +91,78 @@ public class EventManager : MonoBehaviour
     public void ChangeFileIndex(int changeAmount = 0) 
     {
         fileIndex += changeAmount;
-        fileIndex = Mathf.Clamp(fileIndex, 0, eventFileNames.Count);
+
+        //loop index
+        if (fileIndex < 0) 
+        {
+            fileIndex = eventFileNames.Count - 1;
+        }
+        else if (fileIndex > eventFileNames.Count - 1) 
+        {
+            fileIndex = 0;
+        }
     }
 
     public void PlayEvent() 
     {
-        visualizer.fileName = eventFileNames[fileIndex];
-        visualizer.ChangeState(VisualizationState.INACTIVE);
-        visualizer.ChangeState(VisualizationState.LOADING);
+        //only play if the selected event is different from the already playing event, in order to avoid the same event being called multiple times
+        if (visualizer.fileName != eventFileNames[fileIndex]) 
+        {
+            visualizer.fileName = eventFileNames[fileIndex];
+            visualizer.ChangeState(VisualizationState.INACTIVE);
+            visualizer.ChangeState(VisualizationState.LOADING);
+        }
+
+        pauseEvent = false;
     }
 
-    public void ChangePlaySpeed(float changeAmount) 
+    public void ChangePlaybackSpeed(float changeAmount) 
     {
-        visualizer.playbackSpeed += changeAmount;
+        playbackSpeed += changeAmount;
+    }
+
+    public void ChangePlaybackDirection(int direction = 1) 
+    {
+        playbackSpeed = Mathf.Abs(playbackSpeed) * direction;
     }
 
     public void PauseEvent() 
     {
-        visualizer.playbackSpeed = 0;
+        pauseEvent = !pauseEvent;
+    }
+
+    void KeyboardInput() 
+    {
+        //select file
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            ChangeFileIndex(+1);
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            ChangeFileIndex(-1);
+        }
+
+        //play event
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            PlayEvent();
+        }
+
+        //change speed
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            ChangePlaybackSpeed(-0.5f);
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            ChangePlaybackSpeed(0.5f);
+        }
+
+        //pause event
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            PauseEvent();
+        }
     }
 }

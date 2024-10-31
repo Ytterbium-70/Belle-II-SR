@@ -81,7 +81,7 @@ public class EventVisualizer : MonoBehaviour
     List<LineRenderer> pathRenderers = new List<LineRenderer>();
 
     [Header("File Management")]
-    public string fileName = "event320.csv";
+    public string fileName;
     public List<string> extractedData = new List<string>();
     Dictionary<int, ParticleData> eventData = new Dictionary<int, ParticleData>();
 
@@ -118,7 +118,7 @@ public class EventVisualizer : MonoBehaviour
             ResetEventVisualization();
             canSwitchState = true;
         }
-        if (state == VisualizationState.LOADING) 
+        else if (state == VisualizationState.LOADING) 
         {
             canSwitchState = false;
             //create a dictionary for the visualization
@@ -131,7 +131,7 @@ public class EventVisualizer : MonoBehaviour
             canSwitchState = true;
             nextStates.Add(VisualizationState.VISUALIZING);
         }
-        if(state == VisualizationState.VISUALIZING)
+        else if (state == VisualizationState.VISUALIZING)
         {
             canSwitchState = true;
             //visualize event
