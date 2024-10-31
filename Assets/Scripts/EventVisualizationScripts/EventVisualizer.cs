@@ -63,6 +63,7 @@ public class EventVisualizer : MonoBehaviour
     public Texture errorTexture;
     ParticleSystem errorPS;
     ParticleSystem.Particle[] errorParticles;
+    List<int> allTrackIDS = new List<int>();
 
     [Header("Trail Visualization")]
     public float trailLifeTime = 4f;
@@ -153,6 +154,7 @@ public class EventVisualizer : MonoBehaviour
 
         //create a dictionary of the particles in a event. Use Track ID as key for the dictionary
         eventData = new Dictionary<int, ParticleData>();
+        allTrackIDS.Clear();
         while (line != null)
         {
             //extract data from line
@@ -240,6 +242,7 @@ public class EventVisualizer : MonoBehaviour
             else
             {
                 //create new entry
+                allTrackIDS.Add(trackID);
                 ParticleData pd = new ParticleData();
 
                 pd.particleName = extractedData[2];
@@ -261,7 +264,7 @@ public class EventVisualizer : MonoBehaviour
                 pd.times.Add(preT); //add prePointT
                 pd.times.Add(postT); //add postPointT
 
-                eventData.Add(int.Parse(extractedData[0]), pd);
+                eventData.Add(trackID, pd);
 
                 //update start and end time of the event
                 if (preT < eventStartTime)
@@ -275,46 +278,40 @@ public class EventVisualizer : MonoBehaviour
         }
 
         //sort particle events in time
-        for (int i = -100; i < eventData.Count; i++)
+        for (int i = 0; i < allTrackIDS.Count; i++)
         {
-            if (eventData.ContainsKey(i))
+            //bubble sort
+            int breakPoint = eventData[allTrackIDS[i]].times.Count - 1;
+            for (int j = 0; j < eventData[allTrackIDS[i]].times.Count; j++)
             {
-                //bubble sort
-                int breakPoint = eventData[i].times.Count - 1;
-                for (int j = 0; j < eventData[i].times.Count; j++)
+                bool hasNotSwitched = true;
+
+                if (eventData[allTrackIDS[i]].times[j] > eventData[allTrackIDS[i]].times[j + 1])
                 {
-                    bool hasNotSwitched = true;
+                    hasNotSwitched = false;
 
-                    if (eventData[i].times[j] > eventData[i].times[j + 1])
-                    {
-                        hasNotSwitched = false;
+                    //switch time
+                    float tempTime = eventData[allTrackIDS[i]].times[j];
+                    eventData[allTrackIDS[i]].times[j] = eventData[allTrackIDS[i]].times[j + 1];
+                    eventData[allTrackIDS[i]].times[j + 1] = tempTime;
 
-                        //switch time
-                        float tempTime = eventData[i].times[j];
-                        eventData[i].times[j] = eventData[i].times[j + 1];
-                        eventData[i].times[j + 1] = tempTime;
-
-                        //switch coordinate
-                        Vector3 tempPos = eventData[i].points[j];
-                        eventData[i].points[j] = eventData[i].points[j + 1];
-                        eventData[i].points[j + 1] = tempPos;
-                    }
-
-                    breakPoint -= 1;
-
-                    if (hasNotSwitched)
-                        break;
+                    //switch coordinate
+                    Vector3 tempPos = eventData[allTrackIDS[i]].points[j];
+                    eventData[allTrackIDS[i]].points[j] = eventData[allTrackIDS[i]].points[j + 1];
+                    eventData[allTrackIDS[i]].points[j + 1] = tempPos;
                 }
+
+                breakPoint -= 1;
+
+                if (hasNotSwitched)
+                    break;
             }
         }
 
         //Calculate Time Range
-        for (int i = -100; i < eventData.Count; i++)
+        for (int i = 0; i < allTrackIDS.Count; i++)
         {
-            if (eventData.ContainsKey(i))
-            {
-                eventData[i].DetermineTimeRange();
-            }
+            eventData[allTrackIDS[i]].DetermineTimeRange();
         }
 
         //create a Particle System for each particle type and change its appearance
@@ -356,7 +353,7 @@ public class EventVisualizer : MonoBehaviour
 
         eventFile.Close();
 
-        //Debug.Log("Creating the particle dictionary took " + (Time.realtimeSinceStartup - s) + "s");
+        Debug.Log("Creating the particle dictionary took " + (Time.realtimeSinceStartup - s) + "s");
     }
 
     void CreateTrailDictionary()
@@ -364,15 +361,15 @@ public class EventVisualizer : MonoBehaviour
         float s = Time.realtimeSinceStartup; //value for debugging
 
         //create a dictionary of the particle trails
-        for (int i = -100; i < eventData.Count; i++)
+        for (int i = 0; i < allTrackIDS.Count; i++)
         {
             //check wether the trail already exists or not
-            if (eventData.ContainsKey(i) && !particleTrails.ContainsKey(i))
+            if (!particleTrails.ContainsKey(allTrackIDS[i]))
             {
-                ParticleData pd = eventData[i];
+                ParticleData pd = eventData[allTrackIDS[i]];
 
                 //create line renderer
-                GameObject spawn = new GameObject(pd.particleName + ", ID:" + i.ToString());
+                GameObject spawn = new GameObject(pd.particleName + ", ID:" + allTrackIDS[i].ToString());
                 spawn.transform.parent = this.transform;
                 spawn.layer = overlayLayer; //place the line renderers on a layer, so that it can be overlayed on the screen
                 spawn.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
@@ -387,11 +384,11 @@ public class EventVisualizer : MonoBehaviour
                 lr.sortingOrder = -1;
 
                 //add to dictionary
-                particleTrails.Add(i, lr);
+                particleTrails.Add(allTrackIDS[i], lr);
             }
         }
 
-        //Debug.Log("Creating the trail dictionary took " + (Time.realtimeSinceStartup - s) + "s");
+        Debug.Log("Creating the trail dictionary took " + (Time.realtimeSinceStartup - s) + "s");
     }
 
     void VisualizePaths() 
@@ -410,38 +407,35 @@ public class EventVisualizer : MonoBehaviour
             pathRenderers = new List<LineRenderer>();
 
             //create new lineRenderers and reconstruct paths
-            for (int i = -100; i < eventData.Count + 1; i++)
+            for (int i = 0; i < allTrackIDS.Count + 1; i++)
             {
-                if (eventData.ContainsKey(i))
+                ParticleData pd = eventData[allTrackIDS[i]];
+
+                //create LineRenderer
+                GameObject spawn = new GameObject(pd.particleName + "path");
+                spawn.transform.parent = this.transform;
+                spawn.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
+                spawn.transform.localRotation = Quaternion.identity;
+                spawn.transform.localScale = Vector3.one;
+
+                LineRenderer lr = spawn.AddComponent<LineRenderer>();
+                pathRenderers.Add(lr);
+
+                lr.material = lineMat;
+                lr.colorGradient = lineColor;
+                lr.useWorldSpace = false;
+
+                float lWidth = lineWidth * transform.parent.localScale.x;
+                lr.startWidth = lWidth;
+                lr.endWidth = lWidth;
+
+                lr.sortingOrder = -2;
+
+                //Visualize Path
+                lr.positionCount = pd.points.Count;
+                for (int j = 0; j < pd.points.Count; j++)
                 {
-                    ParticleData pd = eventData[i];
-
-                    //create LineRenderer
-                    GameObject spawn = new GameObject(pd.particleName + "path");
-                    spawn.transform.parent = this.transform;
-                    spawn.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
-                    spawn.transform.localRotation = Quaternion.identity;
-                    spawn.transform.localScale = Vector3.one;
-
-                    LineRenderer lr = spawn.AddComponent<LineRenderer>();
-                    pathRenderers.Add(lr);
-
-                    lr.material = lineMat;
-                    lr.colorGradient = lineColor;
-                    lr.useWorldSpace = false;
-
-                    float lWidth = lineWidth * transform.parent.localScale.x;
-                    lr.startWidth = lWidth;
-                    lr.endWidth = lWidth;
-
-                    lr.sortingOrder = -2;
-
-                    //Visualize Path
-                    lr.positionCount = pd.points.Count;
-                    for (int j = 0; j < pd.points.Count; j++)
-                    {
-                        lr.SetPosition(j, pd.points[j] * scale);
-                    }
+                    lr.SetPosition(j, pd.points[j] * scale);
                 }
             }
             Debug.Log("Creating the dictionary and line renderers took " + Time.realtimeSinceStartup.ToString() + "s");
@@ -496,134 +490,131 @@ public class EventVisualizer : MonoBehaviour
         errorPS.SetParticles(errorParticles, errorAlivePat);
 
         //go through each particle and check if they exist at currentTime
-        for (int i = -100; i < eventData.Count; i++)
+        for (int i = 0; i < allTrackIDS.Count; i++)
         {
-            if (eventData.ContainsKey(i))
+            //visualize particle
+            ParticleData pd = eventData[allTrackIDS[i]];
+
+            if (pd.minTime < currentTime && currentTime <= pd.maxTime)
             {
-                //visualize particle
-                ParticleData pd = eventData[i];
+                //find the 2 closest times (1 higher and 1 lower than currentTime) and their corresponding points
+                float smallestTime = pd.minTime;
+                float largestTime = pd.maxTime;
 
-                if (pd.minTime < currentTime && currentTime <= pd.maxTime)
+                Vector3 smallPoint = pd.points[0];
+                Vector3 largePoint = pd.points[0];
+
+                int timeIndex = 0; //later used for creating the trail of a particle
+
+                //times are already sorted (ascending order), so it should be fine just going through the list
+                for (int j = 0; j < pd.times.Count; j++)
                 {
-                    //find the 2 closest times (1 higher and 1 lower than currentTime) and their corresponding points
-                    float smallestTime = pd.minTime;
-                    float largestTime = pd.maxTime;
-
-                    Vector3 smallPoint = pd.points[0];
-                    Vector3 largePoint = pd.points[0];
-
-                    int timeIndex = 0; //later used for creating the trail of a particle
-
-                    //times are already sorted (ascending order), so it should be fine just going through the list
-                    for (int j = 0; j < pd.times.Count; j++)
+                    if (currentTime < pd.times[j])
                     {
-                        if (currentTime < pd.times[j])
+                        smallestTime = pd.times[j - 1];
+                        largestTime = pd.times[j];
+
+                        smallPoint = pd.points[j - 1];
+                        largePoint = pd.points[j];
+
+                        timeIndex = j - 1;
+
+                        break;
+                    }
+                }
+
+                //old script for unsorted pd.times
+                /*for (int j = 0; j < pd.times.Count; j++)
+                {
+                    if (pd.times[j] < currentTime)
+                    {
+                        if (pd.times[j] > smallestTime)
                         {
-                            smallestTime = pd.times[j - 1];
+                            smallestTime = pd.times[j];
+                            smallPoint = pd.points[j];
+                        }
+                    }
+                    if (pd.times[j] >= currentTime)
+                    {
+                        if (pd.times[j] <= largestTime)
+                        {
                             largestTime = pd.times[j];
-
-                            smallPoint = pd.points[j - 1];
                             largePoint = pd.points[j];
-
-                            timeIndex = j - 1;
-
-                            break;
                         }
                     }
+                }*/
 
-                    //old script for unsorted pd.times
-                    /*for (int j = 0; j < pd.times.Count; j++)
-                    {
-                        if (pd.times[j] < currentTime)
-                        {
-                            if (pd.times[j] > smallestTime)
-                            {
-                                smallestTime = pd.times[j];
-                                smallPoint = pd.points[j];
-                            }
-                        }
-                        if (pd.times[j] >= currentTime)
-                        {
-                            if (pd.times[j] <= largestTime)
-                            {
-                                largestTime = pd.times[j];
-                                largePoint = pd.points[j];
-                            }
-                        }
-                    }*/
+                //calculate particle pos
+                float p = (currentTime - smallestTime) / (largestTime - smallestTime); //lerp between the 2 previously determined positions
+                Vector3 pos = Vector3.Lerp(smallPoint, largePoint, p) * scale;
 
-                    //calculate particle pos
-                    float p = (currentTime - smallestTime) / (largestTime - smallestTime); //lerp between the 2 previously determined positions
-                    Vector3 pos = Vector3.Lerp(smallPoint, largePoint, p) * scale;
+                //check if the particle has a corresponding entry in particleTypes. Use error particles if no entry is found
+                ParticleSystem ps = errorPS;
+                ParticleSystem.Particle[] psParticles = errorParticles;
+                Gradient trailCol = errorTrailColor; //Color of the particle trail
 
-                    //check if the particle has a corresponding entry in particleTypes. Use error particles if no entry is found
-                    ParticleSystem ps = errorPS;
-                    ParticleSystem.Particle[] psParticles = errorParticles;
-                    Gradient trailCol = errorTrailColor; //Color of the particle trail
-
-                    for (int j = 0; j < particleTypes.Length; j++)
-                    {
-                        if (particleTypes[j].particleName == pd.particleName)
-                        {
-                            ps = particleTypes[j].ps;
-                            psParticles = particleTypes[j].psParticles;
-                            trailCol = particleTypes[j].trailColor;
-
-                            break;
-                        }
-                    }
-
-                    //spawn and move a particle from a particle system
-                    ps.Emit(1);
-
-                    int alivePat = ps.GetParticles(psParticles);
-                    psParticles[alivePat - 1].startLifetime = Mathf.Infinity;
-                    psParticles[alivePat - 1].position = pos;
-
-                    //apply changes to particle system
-                    ps.SetParticles(psParticles, alivePat);
-
-                    //visualize trail
-                    LineRenderer lr = particleTrails[i];
-                    lr.colorGradient = trailCol; //change trail color according to particle type
-                    lr.widthCurve = CurveScaler(trailShape, trailWidth * transform.parent.localScale.x);
-
-                    List<Vector3> trailPos = new List<Vector3>();
-                    trailPos.Add(pos);
-
-                    for (int j = timeIndex; j >= 0; j--)
-                    {
-                        if (pd.times[j] > currentTime - trailLifeTime)
-                        {
-                            trailPos.Add(pd.points[j] * scale);
-                        }
-                        else
-                        {
-                            //Lerp between the last points before and after (currentTime - trailLifetime)
-                            float sTime = pd.times[j];
-                            float lTime = pd.times[j + 1];
-
-                            float q = (currentTime - trailLifeTime - sTime) / (lTime - sTime);
-                            Vector3 tPos = Vector3.Lerp(pd.points[j], pd.points[j + 1], q) * scale;
-
-                            trailPos.Add(tPos);
-
-                            break;
-                        }
-                    }
-
-                    lr.positionCount = trailPos.Count;
-                    for (int k = 0; k < trailPos.Count; k++)
-                    {
-                        lr.SetPosition(k, trailPos[k]);
-                    }
-                }
-                else
+                for (int j = 0; j < particleTypes.Length; j++)
                 {
-                    //deactivate trails of non-visible particles
-                    LineRenderer lr = particleTrails[i];
-                    lr.positionCount = 0;
+                    if (particleTypes[j].particleName == pd.particleName)
+                    {
+                        ps = particleTypes[j].ps;
+                        psParticles = particleTypes[j].psParticles;
+                        trailCol = particleTypes[j].trailColor;
+
+                        break;
+                    }
                 }
+
+                //spawn and move a particle from a particle system
+                ps.Emit(1);
+
+                int alivePat = ps.GetParticles(psParticles);
+                psParticles[alivePat - 1].startLifetime = Mathf.Infinity;
+                psParticles[alivePat - 1].position = pos;
+
+                //apply changes to particle system
+                ps.SetParticles(psParticles, alivePat);
+
+                //visualize trail
+                LineRenderer lr = particleTrails[allTrackIDS[i]];
+                lr.colorGradient = trailCol; //change trail color according to particle type
+                lr.widthCurve = CurveScaler(trailShape, trailWidth * transform.parent.localScale.x);
+
+                List<Vector3> trailPos = new List<Vector3>();
+                trailPos.Add(pos);
+
+                for (int j = timeIndex; j >= 0; j--)
+                {
+                    if (pd.times[j] > currentTime - trailLifeTime)
+                    {
+                        trailPos.Add(pd.points[j] * scale);
+                    }
+                    else
+                    {
+                        //Lerp between the last points before and after (currentTime - trailLifetime)
+                        float sTime = pd.times[j];
+                        float lTime = pd.times[j + 1];
+
+                        float q = (currentTime - trailLifeTime - sTime) / (lTime - sTime);
+                        Vector3 tPos = Vector3.Lerp(pd.points[j], pd.points[j + 1], q) * scale;
+
+                        trailPos.Add(tPos);
+
+                        break;
+                    }
+                }
+
+                lr.positionCount = trailPos.Count;
+                for (int k = 0; k < trailPos.Count; k++)
+                {
+                    lr.SetPosition(k, trailPos[k]);
+                }
+            }
+            else
+            {
+                //deactivate trails of non-visible particles
+                LineRenderer lr = particleTrails[allTrackIDS[i]];
+                lr.positionCount = 0;
             }
         }
     }

@@ -16,6 +16,7 @@ public class EventManager : MonoBehaviour
 
     [Space]
     public float playbackSpeed = 5f;
+    public TMP_Text playbackText;
     bool pauseEvent = false;
 
     List<string> eventFileNames;
@@ -27,6 +28,7 @@ public class EventManager : MonoBehaviour
     private void Start()
     {
         gm = gameObject.GetComponent<GameManager>();
+        visualizer.fileName = "";
     }
 
     void Update()
@@ -64,6 +66,16 @@ public class EventManager : MonoBehaviour
             if (nameText != null)
             {
                 nameText.text = selectedFileDisplayName;
+            }
+            else 
+            {
+                Debug.Log("Text Mesh missing on EventManager");
+            }
+
+            //display playback speed
+            if (playbackText != null)
+            {
+                playbackText.text = playbackSpeed.ToString("0.0");
             }
             else 
             {

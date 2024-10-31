@@ -2822,6 +2822,7 @@ MonoBehaviour:
   selectedFileDisplayName: 
   nameText: {fileID: 1109394494}
   playbackSpeed: 5
+  playbackText: {fileID: 2038427903216338227}
 --- !u!1001 &2143876748
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7504,6 +7505,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd33f52c299102e49b3257e3d4e18a44, type: 3}
+--- !u!114 &2038427903216338227 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6651443881733457223, guid: bd33f52c299102e49b3257e3d4e18a44, type: 3}
+  m_PrefabInstance: {fileID: 2038427903216338226}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3170741266714512175
 MonoBehaviour:
   m_ObjectHideFlags: 0
