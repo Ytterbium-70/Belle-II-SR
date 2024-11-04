@@ -33,6 +33,31 @@ public class GameManager : MonoBehaviour
         InvokeRepeating("UpdateObjects", 0f, 0.1f);
     }
 
+    private void Update()
+    {
+        //change game state manually using keyboard
+        int enumLength = Enum.GetNames(typeof(GameStates)).Length;
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            int newState = (int)state - 1;
+            if (newState < 0)
+            {
+                newState = enumLength - 1;
+            }
+            state = (GameStates)newState;
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            int newState = (int)state + 1;
+            if (newState > enumLength - 1)
+            {
+                newState = 0;
+            }
+            state = (GameStates)newState;
+        }
+    }
+
     void UpdateObjects() 
     {
         if (state == GameStates.COMPONENTS)
