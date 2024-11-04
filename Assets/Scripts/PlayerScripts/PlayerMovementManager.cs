@@ -5,15 +5,15 @@ using UnityEngine;
 
 public class PlayerMovementManager : MonoBehaviour
 {
-    public Transform player;
+    public Transform playerHead;
+    public Transform playerBody;
     public Transform eventViewMarker;
-    Transform startTransformMarker;
+    Transform startBodyTransformMarker;
+    Transform startHeadTransformMarker;
 
     [Space]
     public float moveSpeed;
     public float rotSpeed;
-    public AnimationCurve speedChange;
-    [SerializeField] float evalPoint;
 
     [Space]
     public Vector3 movementRange;
@@ -26,6 +26,8 @@ public class PlayerMovementManager : MonoBehaviour
 
     Vector3 currentPos;
     Vector3 moveDir;
+    float bodyRotDir;
+    float headRotDir;
 
     GameManager gm;
     GameStates lastState;
@@ -35,18 +37,24 @@ public class PlayerMovementManager : MonoBehaviour
         gm = gameObject.GetComponent<GameManager>();
         lastState = gm.state;
 
-        if (player == null)
+        if (playerHead == null || playerBody == null)
         {
-            player = GameObject.FindGameObjectWithTag("Player").transform;
+            Debug.Log("PlayerMovementManager on " + this.name + " has unassigned components");
         }
 
-        GameObject spawn = new GameObject("PlayerMovementManager_StartTransformMarker");
-        spawn.transform.position = player.position;
-        spawn.transform.rotation = player.rotation;
-        spawn.transform.parent = this.transform;
-        startTransformMarker = spawn.transform;
+        Transform spawn = new GameObject("PlayerMovementManager_BodyTransformMarker").transform;
+        spawn.position = playerBody.position;
+        spawn.rotation = playerBody.rotation;
+        spawn.parent = this.transform;
+        startBodyTransformMarker = spawn;
 
-        currentPos = player.position;
+        spawn = new GameObject("PlayerMovementManager_HeadTransformMarker").transform;
+        spawn.parent = playerBody;
+        spawn.localPosition = playerHead.localPosition;
+        spawn.localRotation = playerHead.localRotation;
+        startHeadTransformMarker = spawn;
+
+        currentPos = playerBody.position;
     }
 
     void Update()
@@ -89,28 +97,39 @@ public class PlayerMovementManager : MonoBehaviour
     void KeyboardInput() 
     {
         //move player using keyboard. Use WASD since the arrow-keys are already in use by the EventManager
-        Vector3 dir = Vector3.zero;
         if (Input.GetKey(KeyCode.W))
         {
-            dir += player.forward;
+            MoveForward(1f);
         }
         if (Input.GetKey(KeyCode.S))
         {
-            dir -= player.forward;
+            MoveForward(-1f);
         }
         if (Input.GetKey(KeyCode.A))
         {
-            dir -= player.right;
+            MoveSideways(-1f);
         }
         if (Input.GetKey(KeyCode.D))
         {
-            dir += player.right;
+            MoveSideways(1f);
         }
 
-        if (dir != Vector3.zero)
+        //rotate player using keyboard
+        if (Input.GetKey(KeyCode.U)) 
         {
-            moveDir += dir;
-            delay = 0.1f;
+            RotateUpwards(-1f);
+        }
+        if (Input.GetKey(KeyCode.N)) 
+        {
+            RotateUpwards(1f);
+        }
+        if (Input.GetKey(KeyCode.H)) 
+        {
+            RotateSideways(-1f);
+        }
+        if (Input.GetKey(KeyCode.J))
+        {
+            RotateSideways(1f);
         }
     }
 
@@ -124,12 +143,13 @@ public class PlayerMovementManager : MonoBehaviour
             if (gm.state == GameStates.EVENTS || gm.state == GameStates.MOVING)
             {
                 StartCoroutine(LerpPosition(currentPos, eventViewMarker.position));
-                player.rotation = eventViewMarker.rotation;
+                StartCoroutine(LerpBodyRotation(playerBody.rotation, eventViewMarker.rotation));
             }
             else
             {
-                StartCoroutine(LerpPosition(currentPos, startTransformMarker.position));
-                player.rotation = startTransformMarker.rotation;
+                StartCoroutine(LerpPosition(currentPos, startBodyTransformMarker.position));
+                StartCoroutine(LerpBodyRotation(playerBody.rotation, startBodyTransformMarker.rotation));
+                StartCoroutine(LerpHeadRotation(playerHead.localRotation, startHeadTransformMarker.localRotation));
             }
         }
     }
@@ -146,56 +166,83 @@ public class PlayerMovementManager : MonoBehaviour
         }
     }
 
+    IEnumerator LerpBodyRotation(Quaternion startRot, Quaternion endRot)
+    {
+        float p = 0f;
+        while (p <= 1f)
+        {
+            p += Time.deltaTime;
+
+            playerBody.rotation = Quaternion.Lerp(startRot, endRot, p);
+            yield return 0;
+        }
+    }
+
+    IEnumerator LerpHeadRotation(Quaternion startRot, Quaternion endRot)
+    {
+        float p = 0f;
+        while (p <= 1f)
+        {
+            p += Time.deltaTime;
+
+            playerHead.localRotation = Quaternion.Lerp(startRot, endRot, p);
+            yield return 0;
+        }
+    }
+
     void MovePlayer()
     {
-        //move player
+        //move and rotate player
         if (gm.state == GameStates.EVENTS || gm.state == GameStates.MOVING)
         {
+            //move playerBody
             moveDir.Normalize();
-            currentPos += moveDir.normalized * speedChange.Evaluate(evalPoint) * moveSpeed * Time.deltaTime;
-
-            if (delay > 0f)
-            {
-                evalPoint += Time.deltaTime;
-            }
-            else
-            {
-                evalPoint -= Time.deltaTime * 10f;
-                if (evalPoint < 0f) 
-                {
-                    //reset movedir
-                    moveDir = Vector3.zero;
-                }
-            }
-            evalPoint = Mathf.Clamp01(evalPoint);
-
-            
+            currentPos += moveDir * moveSpeed * Time.deltaTime;
 
             //limit movement range
             currentPos.x = Mathf.Clamp(currentPos.x, centerPoint.x - movementRange.x, centerPoint.x + movementRange.x);
             currentPos.y = Mathf.Clamp(currentPos.y, centerPoint.y - movementRange.y, centerPoint.y + movementRange.y);
             currentPos.z = Mathf.Clamp(currentPos.z, centerPoint.z - movementRange.z, centerPoint.z + movementRange.z);
+
+
+            //rotate player
+            bodyRotDir = Mathf.Clamp(bodyRotDir, -1f, 1f);
+            headRotDir = Mathf.Clamp(headRotDir, -1f, 1f);
+
+            playerBody.Rotate(Vector3.up * rotSpeed * bodyRotDir * Time.deltaTime);
+            playerHead.Rotate(Vector3.right * rotSpeed * headRotDir * Time.deltaTime);
+
+            //reset movement
+            moveDir = Vector3.zero;
+            bodyRotDir = 0f;
+            headRotDir = 0f;
         }
 
-        //update player position
-        player.position = currentPos;
+        //update playerBody position
+        playerBody.position = currentPos;
     }
 
     public void MoveSideways(float dir)
     {
         delay = 0.1f;
-        moveDir += player.right * dir;
+        moveDir += playerBody.right * dir;
     }
 
     public void MoveForward(float dir)
     {
         delay = 0.1f;
-        moveDir += player.forward * dir;
+        moveDir += playerBody.forward * dir;
     }
 
-    public void RotatePlayer(float dir)
+    public void RotateSideways(float dir) 
     {
         delay = 0.1f;
-        player.Rotate(player.up * dir * rotSpeed * Time.deltaTime);
+        bodyRotDir += dir;
+    }
+
+    public void RotateUpwards(float dir) 
+    {
+        delay = 0.1f;
+        headRotDir += dir;
     }
 }

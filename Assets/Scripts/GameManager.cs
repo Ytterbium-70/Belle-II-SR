@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
         //change game state manually using keyboard
         int enumLength = Enum.GetNames(typeof(GameStates)).Length;
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.O))
         {
             int newState = (int)state - 1;
             if (newState < 0)
@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
             }
             state = (GameStates)newState;
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.P))
         {
             int newState = (int)state + 1;
             if (newState > enumLength - 1)
