@@ -17,6 +17,8 @@ public class PopUpController : MonoBehaviour
     public string despawnAnimationName = "PopUp_Close";
     Animator anim;
 
+    public GameObject despawnEffect;
+
     float returnTime;
     bool hasBeenClosed = false;
     void Start()
@@ -24,6 +26,9 @@ public class PopUpController : MonoBehaviour
         spawnPos = transform.position;
 
         player = GameObject.FindGameObjectWithTag("MainCamera").transform;
+        if (player == null)
+            Debug.Log("PopUpController on " + this.name + "was unable to find player. The MainCamera tag might be missing");
+
         rb = gameObject.GetComponent<Rigidbody>();
 
         anim = gameObject.GetComponent<Animator>();
@@ -95,6 +100,11 @@ public class PopUpController : MonoBehaviour
     public void DestroyPopUp() 
     {
         //spawn some kind of effect
+        if (despawnEffect != null) 
+        {
+            GameObject spawn = Instantiate(despawnEffect, transform.position, transform.rotation);
+            Destroy(spawn, 10f);
+        }
 
         Destroy(gameObject);
     }
