@@ -92,7 +92,7 @@ public class DetectorSizeManager : MonoBehaviour
                 }
             }
         }
-        else if (gm.state == GameStates.EVENTS) 
+        else if (gm.state == GameStates.EVENTS || gm.state == GameStates.MOVING) 
         {
             //change size of detectorParent according to the SC
             currentScale += (eventSizeClass - currentScale) * changeSpeed * Time.deltaTime;

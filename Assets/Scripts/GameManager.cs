@@ -28,6 +28,10 @@ public class GameManager : MonoBehaviour
     public GameObject[] objToEnable_3;
     public GameObject[] objToDisable_3;
 
+    [Header("Moving View Settings")]
+    public GameObject[] objToEnable_4;
+    public GameObject[] objToDisable_4;
+
     private void Start()
     {
         InvokeRepeating("UpdateObjects", 0f, 0.1f);
@@ -74,6 +78,11 @@ public class GameManager : MonoBehaviour
         {
             ChangeActiveState(objToEnable_3, true);
             ChangeActiveState(objToDisable_3, false);
+        }
+        else if (state == GameStates.MOVING)
+        {
+            ChangeActiveState(objToEnable_4, true);
+            ChangeActiveState(objToDisable_4, false);
         }
     }
 

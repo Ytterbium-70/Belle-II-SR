@@ -20,9 +20,10 @@ public class PlayerMovementManager : MonoBehaviour
     public Vector3 centerPoint;
 
     [Space]
-    public GameObject[] buttonsToDiactivate; //deactivate buttons not used for movement while moving to avoid accidentally clicking them
+    public GameObject[] buttonsToDeactivate_Event; //deactivate buttons not used for movement while moving to avoid accidentally clicking them
+    public GameObject[] buttonsToDeactivate_Moving;
 
-    float delay; //apparently the ultraleap buttons aren't being called every single frame even if you keep your hands on them (Switching to fixed update might work better, IDK). As a (francly crappy) solution, a small delay is used
+    float delay;
 
     Vector3 currentPos;
     Vector3 moveDir;
@@ -59,21 +60,14 @@ public class PlayerMovementManager : MonoBehaviour
 
     void Update()
     {
-        delay -= Time.deltaTime;
-        //activate/deactivate buttons not used for movement in order to avoid accidentally clicking them
-        if (delay > 0f)
+        //deactivate buttons not used for movement in order to avoid accidentally pressing them
+        if (gm.state == GameStates.EVENTS)
         {
-            for (int i = 0; i < buttonsToDiactivate.Length; i++)
-            {
-                buttonsToDiactivate[i].SetActive(false);
-            }
+            DeactivateUnusedButtons(buttonsToDeactivate_Event);
         }
-        else
+        else if (gm.state == GameStates.MOVING) 
         {
-            for (int i = 0; i < buttonsToDiactivate.Length; i++)
-            {
-                buttonsToDiactivate[i].SetActive(true);
-            }
+            DeactivateUnusedButtons(buttonsToDeactivate_Moving);
         }
 
         ChangeTransformOnStateChange();
@@ -87,11 +81,33 @@ public class PlayerMovementManager : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        //draw movement range
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(centerPoint, movementRange * 2f);
 
         Gizmos.color = new Color(1f, 0f, 0f, 0.2f);
         Gizmos.DrawCube(centerPoint, movementRange * 2f);
+    }
+
+    void DeactivateUnusedButtons(GameObject[] buttonsToDeactivate) 
+    {
+        delay -= Time.deltaTime;
+        //activate/deactivate buttons not used for movement in order to avoid accidentally clicking them
+        if (delay > 0f)
+        {
+            for (int i = 0; i < buttonsToDeactivate.Length; i++)
+            {
+                buttonsToDeactivate[i].SetActive(false);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < buttonsToDeactivate.Length; i++)
+            {
+                buttonsToDeactivate[i].SetActive(true);
+            }
+        }
+
     }
 
     void KeyboardInput() 
@@ -117,11 +133,11 @@ public class PlayerMovementManager : MonoBehaviour
         //rotate player using keyboard
         if (Input.GetKey(KeyCode.U)) 
         {
-            RotateUpwards(-1f);
+            RotateUpwards(1f);
         }
         if (Input.GetKey(KeyCode.N)) 
         {
-            RotateUpwards(1f);
+            RotateUpwards(-1f);
         }
         if (Input.GetKey(KeyCode.H)) 
         {
@@ -192,7 +208,7 @@ public class PlayerMovementManager : MonoBehaviour
 
     void MovePlayer()
     {
-        //move and rotate player
+        //only move on the correct game states
         if (gm.state == GameStates.EVENTS || gm.state == GameStates.MOVING)
         {
             //move playerBody
@@ -243,6 +259,6 @@ public class PlayerMovementManager : MonoBehaviour
     public void RotateUpwards(float dir) 
     {
         delay = 0.1f;
-        headRotDir += dir;
+        headRotDir -= dir;
     }
 }
