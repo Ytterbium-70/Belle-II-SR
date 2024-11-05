@@ -212,11 +212,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useStartColors: 1
   normalCol: []
+  alwaysHighlight: 0
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   isHologram: 1
   hologramCol: {r: 0, g: 1, b: 1, a: 0.09411765}
   MeshObj: {fileID: 5709019449111268573}
-  changeSpeed: 3
+  changeSpeed: 2
 --- !u!114 &-4372989791682201021
 MonoBehaviour:
   m_ObjectHideFlags: 0

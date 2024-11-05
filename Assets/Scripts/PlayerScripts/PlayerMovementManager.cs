@@ -33,6 +33,8 @@ public class PlayerMovementManager : MonoBehaviour
     GameManager gm;
     GameStates lastState;
 
+    List<IEnumerator> runningCoroutines = new List<IEnumerator>();
+
     void Start()
     {
         gm = gameObject.GetComponent<GameManager>();
@@ -158,14 +160,38 @@ public class PlayerMovementManager : MonoBehaviour
 
             if (gm.state == GameStates.EVENTS || gm.state == GameStates.MOVING)
             {
-                StartCoroutine(LerpPosition(currentPos, eventViewMarker.position));
-                StartCoroutine(LerpBodyRotation(playerBody.rotation, eventViewMarker.rotation));
+                //stop currently running coroutines to avoid coroutines from working against eachother
+                foreach (IEnumerator e in runningCoroutines)
+                    StopCoroutine(e);
+                runningCoroutines.Clear();
+
+                //Lerp position and rotation and add coroutines to the list of running coroutines
+                IEnumerator e1 = LerpPosition(currentPos, eventViewMarker.position);
+                IEnumerator e2 = LerpBodyRotation(playerBody.rotation, eventViewMarker.rotation);
+                runningCoroutines.Add(e1);
+                runningCoroutines.Add(e2);
+
+                StartCoroutine(e1);
+                StartCoroutine(e2);
             }
             else
             {
-                StartCoroutine(LerpPosition(currentPos, startBodyTransformMarker.position));
-                StartCoroutine(LerpBodyRotation(playerBody.rotation, startBodyTransformMarker.rotation));
-                StartCoroutine(LerpHeadRotation(playerHead.localRotation, startHeadTransformMarker.localRotation));
+                //stop currently running coroutines to avoid coroutines from working against eachother
+                foreach (IEnumerator e in runningCoroutines)
+                    StopCoroutine(e);
+                runningCoroutines.Clear();
+
+                //Lerp position and rotation and add coroutines to the list of running coroutines
+                IEnumerator e1 = LerpPosition(currentPos, startBodyTransformMarker.position);
+                IEnumerator e2 = LerpBodyRotation(playerBody.rotation, startBodyTransformMarker.rotation);
+                IEnumerator e3 = LerpHeadRotation(playerHead.localRotation, startHeadTransformMarker.localRotation);
+                runningCoroutines.Add(e1);
+                runningCoroutines.Add(e2);
+                runningCoroutines.Add(e3);
+
+                StartCoroutine(e1);
+                StartCoroutine(e2);
+                StartCoroutine(e3);
             }
         }
     }

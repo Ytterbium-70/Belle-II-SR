@@ -22,7 +22,7 @@ public class DetectorSizeManager : MonoBehaviour
     float smallestSizeClass;
 
     [Header("Event View Settings")]
-    public float eventSizeClass = 0.06f;
+    public float eventSizeClass = 1f;
 
     GameManager gm;
     float transitionDelay;
@@ -94,6 +94,9 @@ public class DetectorSizeManager : MonoBehaviour
         }
         else if (gm.state == GameStates.EVENTS || gm.state == GameStates.MOVING) 
         {
+            //erset current index
+            currentSCIndex = 0;
+
             //change size of detectorParent according to the SC
             currentScale += (eventSizeClass - currentScale) * changeSpeed * Time.deltaTime;
             detectorParent.localScale = Vector3.one * currentScale;
