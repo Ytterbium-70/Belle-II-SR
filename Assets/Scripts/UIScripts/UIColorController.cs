@@ -50,6 +50,7 @@ public class UIColorController : MonoBehaviour
             currentColor = defaultColor;
         }
         m.color = currentColor;
+        m.SetColor("_EmissionColor", currentColor * 0.5f);
     }
 
     void Update()
@@ -60,10 +61,12 @@ public class UIColorController : MonoBehaviour
         if (highlightDelay > 0)
         {
             m.color = highlightColor;
+            m.SetColor("_EmissionColor", highlightColor * 0.5f);
         }
         else 
         {
             m.color = currentColor;
+            m.SetColor("_EmissionColor", currentColor * 0.5f);
         }
     }
 

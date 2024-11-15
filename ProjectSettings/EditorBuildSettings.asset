@@ -4,6 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Belle II Detector.unity
+    guid: 68a8edfe392084b4c89bbc7ca79afe18
   m_configObjects:
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 81c7186d6d8fbb748b7c38c1272c3728, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 443084091fe4842a284185ac9d143578, type: 2}

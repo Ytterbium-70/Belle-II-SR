@@ -1,10 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
 using System;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 
 [Serializable]
 public class ParticleData
@@ -146,29 +143,29 @@ public class EventVisualizer : MonoBehaviour
     {
         float s = Time.realtimeSinceStartup; //Value for debugging
 
-        Directory.CreateDirectory(Application.dataPath + "/Belle2ParticleEvents/");
-        StreamReader eventFile = new StreamReader(Application.dataPath + "/Belle2ParticleEvents/" + fileName);
+        //generate a list with all the lines of a file
+        TextAsset eventFile = (TextAsset)Resources.Load("Belle2ParticleEvents/" + fileName);
+        List<string> fileLines = new List<string>(eventFile.text.Split('\n'));
 
-        string line = eventFile.ReadLine(); //skip 1st line
-        line = eventFile.ReadLine();
+        int line = 1;  //skip 1st line
 
         //create a dictionary of the particles in a event. Use Track ID as key for the dictionary
         eventData = new Dictionary<int, ParticleData>();
         allTrackIDS.Clear();
-        while (line != null)
+        while (line < fileLines.Count - 1)
         {
             //extract data from line
             extractedData.Clear();
 
-            for (int i = 0; i < line.Length; i++)
+            for (int i = 0; i < fileLines[line].Length; i++)
             {
                 string temp = "";
-                while (line[i] != ',')
+                while (fileLines[line][i] != ',')
                 {
-                    temp += line[i];
+                    temp += fileLines[line][i];
                     i += 1;
 
-                    if (i == line.Length)
+                    if (i == fileLines[line].Length)
                         break;
                 }
                 extractedData.Add(temp);
@@ -274,7 +271,7 @@ public class EventVisualizer : MonoBehaviour
             }
 
             //go to the next line
-            line = eventFile.ReadLine();
+            line += 1;
         }
 
         //sort particle events in time
@@ -350,8 +347,6 @@ public class EventVisualizer : MonoBehaviour
             ParticleSystemRenderer errorPsr = errorPS.GetComponent<ParticleSystemRenderer>();
             errorPsr.sharedMaterial = errorMat;
         }
-
-        eventFile.Close();
 
         Debug.Log("Creating the particle dictionary took " + (Time.realtimeSinceStartup - s) + "s");
     }
@@ -522,27 +517,6 @@ public class EventVisualizer : MonoBehaviour
                         break;
                     }
                 }
-
-                //old script for unsorted pd.times
-                /*for (int j = 0; j < pd.times.Count; j++)
-                {
-                    if (pd.times[j] < currentTime)
-                    {
-                        if (pd.times[j] > smallestTime)
-                        {
-                            smallestTime = pd.times[j];
-                            smallPoint = pd.points[j];
-                        }
-                    }
-                    if (pd.times[j] >= currentTime)
-                    {
-                        if (pd.times[j] <= largestTime)
-                        {
-                            largestTime = pd.times[j];
-                            largePoint = pd.points[j];
-                        }
-                    }
-                }*/
 
                 //calculate particle pos
                 float p = (currentTime - smallestTime) / (largestTime - smallestTime); //lerp between the 2 previously determined positions

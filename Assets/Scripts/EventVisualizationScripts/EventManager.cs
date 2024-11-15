@@ -1,10 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
 using TMPro;
-using Leap;
-using Unity.VisualScripting;
 
 [RequireComponent(typeof(GameManager))]
 public class EventManager : MonoBehaviour
@@ -20,7 +16,6 @@ public class EventManager : MonoBehaviour
     bool pauseEvent = false;
 
     List<string> eventFileNames;
-    string[] eventFilePaths;
     int fileIndex;
 
     GameManager gm;
@@ -35,13 +30,12 @@ public class EventManager : MonoBehaviour
     {
         if (gm.state == GameStates.EVENTS)
         {
-            //make a list of the files in the event directory
-            eventFilePaths = Directory.GetFiles(Application.dataPath + "/Belle2ParticleEvents/", "*.csv");
-
+            //make a list of the event files in the Resources directory
             eventFileNames = new List<string>();
-            foreach (string filePath in eventFilePaths)
+            Object[] allFiles = Resources.LoadAll("Belle2ParticleEvents/");
+            for (int i = 0; i < allFiles.Length; i++)
             {
-                eventFileNames.Add(Path.GetFileName(filePath));
+                eventFileNames.Add(allFiles[i].name);
             }
 
             //Change Display Name
@@ -55,9 +49,6 @@ public class EventManager : MonoBehaviour
                 }
                 else
                 {
-                    if (fileName[i] == '.')
-                        break;
-
                     selectedFileDisplayName += fileName[i].ToString();
                 }
             }
