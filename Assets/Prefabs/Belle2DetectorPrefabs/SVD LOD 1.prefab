@@ -247,7 +247,7 @@ GameObject:
   - component: {fileID: 9152999455886929714}
   - component: {fileID: 5000060572505332857}
   - component: {fileID: 4011825342722127452}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SVD
   m_TagString: Untagged
   m_Icon: {fileID: 0}

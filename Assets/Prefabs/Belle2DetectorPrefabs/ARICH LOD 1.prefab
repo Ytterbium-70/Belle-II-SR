@@ -247,7 +247,7 @@ GameObject:
   - component: {fileID: 4628874352379465271}
   - component: {fileID: 7248485503911393794}
   - component: {fileID: 5522766325812100643}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ARICH
   m_TagString: Untagged
   m_Icon: {fileID: 0}

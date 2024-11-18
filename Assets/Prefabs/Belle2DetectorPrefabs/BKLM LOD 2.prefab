@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3426761395824226806}
   - component: {fileID: 184555539536876354}
   - component: {fileID: 5968416433758783730}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BKLM.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -247,7 +247,7 @@ GameObject:
   - component: {fileID: 5448182595017601953}
   - component: {fileID: 5497583136165400524}
   - component: {fileID: 4032494934134800867}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ECL
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -248,7 +248,7 @@ GameObject:
   - component: {fileID: 1472689840345983729}
   - component: {fileID: 2167818599745976087}
   - component: {fileID: 8317889807288228235}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PXD
   m_TagString: Untagged
   m_Icon: {fileID: 0}

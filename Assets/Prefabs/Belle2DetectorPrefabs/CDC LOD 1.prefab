@@ -247,7 +247,7 @@ GameObject:
   - component: {fileID: 4548260923966986234}
   - component: {fileID: 125541313018116987}
   - component: {fileID: 9050530684512489914}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CDC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
