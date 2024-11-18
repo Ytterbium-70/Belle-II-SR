@@ -266,25 +266,25 @@ public class PlayerMovementManager : MonoBehaviour
 
     public void MoveSideways(float dir)
     {
-        delay = 0.1f;
+        delay = 0.2f;
         moveDir += playerBody.right * dir;
     }
 
     public void MoveForward(float dir)
     {
-        delay = 0.1f;
+        delay = 0.2f;
         moveDir += playerBody.forward * dir;
     }
 
     public void RotateSideways(float dir) 
     {
-        delay = 0.1f;
+        delay = 0.2f;
         bodyRotDir += dir;
     }
 
     public void RotateUpwards(float dir) 
     {
-        delay = 0.1f;
+        delay = 0.2f;
         headRotDir -= dir;
     }
 }
