@@ -156,20 +156,7 @@ public class EventVisualizer : MonoBehaviour
         {
             //extract data from line
             extractedData.Clear();
-
-            for (int i = 0; i < fileLines[line].Length; i++)
-            {
-                string temp = "";
-                while (fileLines[line][i] != ',')
-                {
-                    temp += fileLines[line][i];
-                    i += 1;
-
-                    if (i == fileLines[line].Length)
-                        break;
-                }
-                extractedData.Add(temp);
-            }
+            extractedData = new List<string>(fileLines[line].Split(','));
 
             //check if particle already has an entry in the dictionary
             int trackID = int.Parse(extractedData[0]);
