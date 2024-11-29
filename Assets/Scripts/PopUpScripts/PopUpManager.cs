@@ -108,4 +108,9 @@ public class PopUpManager : MonoBehaviour
             }
         }
     }
+
+    public void SetLanguage(int index) 
+    {
+        languageIndex = index;
+    }
 }
