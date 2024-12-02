@@ -79,6 +79,7 @@ public class EventVisualizer : MonoBehaviour
     List<LineRenderer> pathRenderers = new List<LineRenderer>();
 
     [Header("File Management")]
+    public string fileDirectory = "Belle2ParticleEvents/";
     public string fileName;
     public List<string> extractedData = new List<string>();
     Dictionary<int, ParticleData> eventData = new Dictionary<int, ParticleData>();
@@ -90,6 +91,11 @@ public class EventVisualizer : MonoBehaviour
     private void Start()
     {
         nextStates = new List<VisualizationState>();
+
+        if (transform.parent == null)
+        {
+            Debug.Log("Caution: EventVisualizer on " + this.name + " requires a parent object");
+        }
     }
 
     private void Update()
@@ -144,7 +150,7 @@ public class EventVisualizer : MonoBehaviour
         float s = Time.realtimeSinceStartup; //Value for debugging
 
         //generate a list with all the lines of a file
-        TextAsset eventFile = (TextAsset)Resources.Load("Belle2ParticleEvents/" + fileName);
+        TextAsset eventFile = (TextAsset)Resources.Load(fileDirectory + fileName);
         List<string> fileLines = new List<string>(eventFile.text.Split('\n'));
 
         int line = 1;  //skip 1st line
@@ -261,7 +267,7 @@ public class EventVisualizer : MonoBehaviour
             line += 1;
         }
 
-        //sort particle events in time
+        //sort particle events in time (ascending order)
         for (int i = 0; i < allTrackIDS.Count; i++)
         {
             //bubble sort
@@ -305,6 +311,8 @@ public class EventVisualizer : MonoBehaviour
             if (particleTypes[i].ps == null) 
             {
                 ParticleSystem ps = Instantiate(particleSystemTemplate, transform.position, Quaternion.identity).GetComponent<ParticleSystem>();
+                ps.name = "EventVisualizer PatSys: " + particleTypes[i].particleName;
+
                 ps.transform.parent = this.transform;
                 ps.transform.localPosition = Vector3.zero; //Reset transform so that the visualization runs correctly in local space. Not doing so means ou can only move the visulization after starting itw
                 ps.transform.localRotation = Quaternion.identity;
@@ -324,6 +332,8 @@ public class EventVisualizer : MonoBehaviour
         if (errorPS == null) 
         {
             errorPS = Instantiate(particleSystemTemplate, transform.position, Quaternion.identity).GetComponent<ParticleSystem>();
+            errorPS.name = "EventVisualizer ErrorPatSys";
+
             errorPS.transform.parent = this.transform;
             errorPS.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
             errorPS.transform.localRotation = Quaternion.identity;

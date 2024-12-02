@@ -299,7 +299,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 642270123295808851, guid: 344e0624f11e4eb44838814b2ce256ae, type: 3}
       propertyPath: m_Name
-      value: EventVisualizer
+      value: Visualizer
       objectReference: {fileID: 0}
     - target: {fileID: 642270123295808851, guid: 344e0624f11e4eb44838814b2ce256ae, type: 3}
       propertyPath: m_Layer
