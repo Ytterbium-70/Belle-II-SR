@@ -92,7 +92,7 @@ public class DetectorSizeManager : MonoBehaviour
                 }
             }
         }
-        else if (gm.state == GameStates.EVENTS || gm.state == GameStates.MOVING) 
+        else if (gm.state == GameStates.EVENTS || gm.state == GameStates.TRACKS || gm.state == GameStates.MOVING) 
         {
             //erset current index
             currentSCIndex = 0;

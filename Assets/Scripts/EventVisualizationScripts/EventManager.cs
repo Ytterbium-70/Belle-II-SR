@@ -36,12 +36,15 @@ public class EventManager : MonoBehaviour
 
         eViz = visualizer.GetComponent<EventVisualizer>();
         eViz.fileName = "";
+        eViz.fileDirectory = eventFileDirectory;
 
         pViz = visualizer.GetComponent<PathVisualizer>();
         pViz.fileName = "";
+        pViz.fileDirectory = eventFileDirectory;
 
         tViz = visualizer.GetComponent<TrackVisualizer>();
         tViz.fileName = "";
+        tViz.fileDirectory = trackFileDirectory;
     }
 
     void Update()

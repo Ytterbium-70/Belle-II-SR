@@ -21,6 +21,7 @@ public class PlayerMovementManager : MonoBehaviour
 
     [Space]
     public GameObject[] buttonsToDeactivate_Event; //deactivate buttons not used for movement while moving to avoid accidentally clicking them
+    public GameObject[] buttonsToDeactivate_Tracks;
     public GameObject[] buttonsToDeactivate_Moving;
 
     float delay;
@@ -67,7 +68,11 @@ public class PlayerMovementManager : MonoBehaviour
         {
             DeactivateUnusedButtons(buttonsToDeactivate_Event);
         }
-        else if (gm.state == GameStates.MOVING) 
+        else if (gm.state == GameStates.TRACKS) 
+        {
+            DeactivateUnusedButtons(buttonsToDeactivate_Tracks);
+        }
+        else if (gm.state == GameStates.MOVING)
         {
             DeactivateUnusedButtons(buttonsToDeactivate_Moving);
         }
@@ -158,7 +163,7 @@ public class PlayerMovementManager : MonoBehaviour
         {
             lastState = gm.state;
 
-            if (gm.state == GameStates.EVENTS || gm.state == GameStates.MOVING)
+            if (gm.state == GameStates.EVENTS || gm.state == GameStates.TRACKS || gm.state == GameStates.MOVING)
             {
                 //stop currently running coroutines to avoid coroutines from working against eachother
                 foreach (IEnumerator e in runningCoroutines)
@@ -235,7 +240,7 @@ public class PlayerMovementManager : MonoBehaviour
     void MovePlayer()
     {
         //only move on the correct game states
-        if (gm.state == GameStates.EVENTS || gm.state == GameStates.MOVING)
+        if (gm.state == GameStates.EVENTS || gm.state == GameStates.TRACKS || gm.state == GameStates.MOVING)
         {
             //move playerBody
             moveDir.Normalize();
