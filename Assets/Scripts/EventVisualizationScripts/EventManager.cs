@@ -5,17 +5,27 @@ using TMPro;
 [RequireComponent(typeof(GameManager))]
 public class EventManager : MonoBehaviour
 {
-    public EventVisualizer visualizer;
+    public GameObject visualizer;
+    EventVisualizer eViz;
+    PathVisualizer pViz;
+    TrackVisualizer tViz;
 
+    [Header("Name Display Settings")]
     public string selectedFileDisplayName;
-    public TMP_Text nameText;
+    public TMP_Text eventNameText;
+    public TMP_Text trackNameText;
 
-    [Space]
+    [Header("´Playback Display Settings")]
     public float playbackSpeed = 5f;
-    public TMP_Text playbackText;
+    public TMP_Text eventPlaybackText;
+    public TMP_Text trackPlaybackText;
     bool pauseEvent = false;
 
-    List<string> eventFileNames;
+    [Header("File management")]
+    public string eventFileDirectory = "Belle2ParticleEvents/";
+    public string trackFileDirectory = "Belle2Tracks/";
+    List<string> eventFileNames = new List<string>();
+    List<string> trackFileNames = new List<string>();
     int fileIndex;
 
     GameManager gm;
@@ -23,71 +33,114 @@ public class EventManager : MonoBehaviour
     private void Start()
     {
         gm = gameObject.GetComponent<GameManager>();
-        visualizer.fileName = "";
+
+        eViz = visualizer.GetComponent<EventVisualizer>();
+        eViz.fileName = "";
+
+        pViz = visualizer.GetComponent<PathVisualizer>();
+        pViz.fileName = "";
+
+        tViz = visualizer.GetComponent<TrackVisualizer>();
+        tViz.fileName = "";
     }
 
     void Update()
     {
+        if (gm.state == GameStates.EVENTS || gm.state == GameStates.TRACKS) 
+        {
+            KeyboardInput();
+        }
+
         if (gm.state == GameStates.EVENTS)
         {
-            //make a list of the event files in the Resources directory
-            eventFileNames = new List<string>();
-            Object[] allFiles = Resources.LoadAll("Belle2ParticleEvents/");
-            for (int i = 0; i < allFiles.Length; i++)
-            {
-                eventFileNames.Add(allFiles[i].name);
-            }
-
-            //Change Display Name
-            string fileName = eventFileNames[fileIndex];
-            selectedFileDisplayName = "";
-            for (int i = 0; i < fileName.Length; i++)
-            {
-                if (i == 0)
-                {
-                    selectedFileDisplayName += fileName[i].ToString().ToUpper();
-                }
-                else
-                {
-                    selectedFileDisplayName += fileName[i].ToString();
-                }
-            }
-
-            //display file name
-            if (nameText != null)
-            {
-                nameText.text = selectedFileDisplayName;
-            }
-            else 
-            {
-                Debug.Log("Text Mesh missing on EventManager");
-            }
+            LoadFiles(eventFileDirectory, ref eventFileNames);
+            DisplayName(eventFileNames, fileIndex, ref eventNameText);
 
             //display playback speed
-            if (playbackText != null)
+            if (eventPlaybackText != null)
             {
-                playbackText.text = playbackSpeed.ToString("0.0");
+                eventPlaybackText.text = playbackSpeed.ToString("0.0");
             }
             else 
             {
                 Debug.Log("Text Mesh missing on EventManager");
             }
-
 
             if (!pauseEvent)
             {
-                visualizer.playbackSpeed = playbackSpeed;
+                eViz.playbackSpeed = playbackSpeed;
             }
             else 
             {
-                visualizer.playbackSpeed = 0f;
+                eViz.playbackSpeed = 0f;
             }
-
-            KeyboardInput();
         }
         else 
         {
-            visualizer.ChangeState(VisualizationState.INACTIVE);
+            eViz.ChangeState(VisualizationState.INACTIVE);
+        }
+
+        if (gm.state == GameStates.TRACKS)
+        {
+            //make a list of the track files in the Resources directory
+            LoadFiles(trackFileDirectory, ref trackFileNames);
+            //DisplayName(trackFileNames, fileIndex, ref trackNameText);
+
+            if (!pauseEvent)
+            {
+                eViz.playbackSpeed = playbackSpeed;
+            }
+            else
+            {
+                eViz.playbackSpeed = 0f;
+            }
+        }
+        else 
+        {
+            pViz.ChangeState(VisualizationState.INACTIVE);
+            tViz.ChangeState(VisualizationState.INACTIVE);
+        }
+    }
+
+    void LoadFiles(string directory, ref List<string> fileNameList) 
+    {
+        //make a list of the track files in the Resources directory
+        fileNameList = new List<string>();
+        Object[] allFiles = Resources.LoadAll(directory);
+        for (int i = 0; i < allFiles.Length; i++)
+        {
+            fileNameList.Add(allFiles[i].name);
+        }
+
+        //Make sure fileIndex is still within range
+        fileIndex = Mathf.Clamp(fileIndex, 0, fileNameList.Count - 1);
+    }
+
+    void DisplayName(List<string> fileNameList, int index, ref TMP_Text displayText) 
+    {
+        //Change Display Name
+        string fileName = fileNameList[index];
+        selectedFileDisplayName = "";
+        for (int i = 0; i < fileName.Length; i++)
+        {
+            if (i == 0)
+            {
+                selectedFileDisplayName += fileName[i].ToString().ToUpper();
+            }
+            else
+            {
+                selectedFileDisplayName += fileName[i].ToString();
+            }
+        }
+
+        //display file name
+        if (displayText != null)
+        {
+            displayText.text = selectedFileDisplayName;
+        }
+        else
+        {
+            Debug.Log("Text Mesh missing on EventManager");
         }
     }
 
@@ -95,12 +148,23 @@ public class EventManager : MonoBehaviour
     {
         fileIndex += changeAmount;
 
-        //loop index
-        if (fileIndex < 0) 
+        //loop index depending of state
+        if (gm.state == GameStates.EVENTS)
         {
-            fileIndex = eventFileNames.Count - 1;
+            if (fileIndex < 0)
+            {
+                fileIndex = eventFileNames.Count - 1;
+            }
+            else if (fileIndex > eventFileNames.Count - 1)
+            {
+                fileIndex = 0;
+            }
         }
-        else if (fileIndex > eventFileNames.Count - 1) 
+        else if (gm.state == GameStates.TRACKS)
+        {
+            //loop using number of track files
+        }
+        else //probably not neccessary, but reset if the file index is somehow changed in a different GameState
         {
             fileIndex = 0;
         }
@@ -108,12 +172,27 @@ public class EventManager : MonoBehaviour
 
     public void PlayEvent() 
     {
-        //only play if the selected event is different from the already playing event, in order to avoid the same event being called multiple times
-        if (visualizer.fileName != eventFileNames[fileIndex]) 
+        if (gm.state == GameStates.EVENTS)
         {
-            visualizer.fileName = eventFileNames[fileIndex];
-            visualizer.ChangeState(VisualizationState.INACTIVE);
-            visualizer.ChangeState(VisualizationState.LOADING);
+            //only play if the selected event is different from the already playing event, in order to avoid the same event being called multiple times
+            if (eViz.fileName != eventFileNames[fileIndex])
+            {
+                eViz.fileName = eventFileNames[fileIndex];
+                eViz.ChangeState(VisualizationState.INACTIVE);
+                eViz.ChangeState(VisualizationState.LOADING);
+            }
+        }
+        else if (gm.state == GameStates.TRACKS) 
+        {
+            //for now use event003. Change later once the UI elements are done
+            //check if the tracks have a corresponding event
+            pViz.fileName = "event003";
+            tViz.fileName = "event003_tracks";
+
+            pViz.ChangeState(VisualizationState.INACTIVE);
+            pViz.ChangeState(VisualizationState.LOADING);
+            tViz.ChangeState(VisualizationState.INACTIVE);
+            tViz.ChangeState(VisualizationState.LOADING);
         }
 
         pauseEvent = false;

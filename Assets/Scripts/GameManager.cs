@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public enum GameStates { COMPONENTS, DESCRIPTIONS, EVENTS, MOVING, Tracks }
+public enum GameStates { COMPONENTS, DESCRIPTIONS, EVENTS, TRACKS, MOVING  }
 public class GameManager : MonoBehaviour
 {
     //COMPONENTS: Allow player to go through each component and move them
@@ -30,10 +30,14 @@ public class GameManager : MonoBehaviour
     [Header("Event View Settings")]
     public GameObject[] objToEnable_3;
     public GameObject[] objToDisable_3;
-
-    [Header("Moving View Settings")]
+    
+    [Header("Track View Settings")]
     public GameObject[] objToEnable_4;
     public GameObject[] objToDisable_4;
+
+    [Header("Moving View Settings")]
+    public GameObject[] objToEnable_5;
+    public GameObject[] objToDisable_5;
 
     private void Start()
     {
@@ -105,10 +109,15 @@ public class GameManager : MonoBehaviour
             ChangeActiveState(objToEnable_3, true);
             ChangeActiveState(objToDisable_3, false);
         }
-        else if (state == GameStates.MOVING)
+        else if (state == GameStates.TRACKS)
         {
             ChangeActiveState(objToEnable_4, true);
             ChangeActiveState(objToDisable_4, false);
+        }
+        else if (state == GameStates.MOVING)
+        {
+            ChangeActiveState(objToEnable_5, true);
+            ChangeActiveState(objToDisable_5, false);
         }
     }
 

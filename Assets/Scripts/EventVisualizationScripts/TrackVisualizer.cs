@@ -10,9 +10,13 @@ class TrackData
 
 public class TrackVisualizer : MonoBehaviour
 {
+    [Header("General Settings")]
     public VisualizationState state;
     [SerializeField] List<VisualizationState> nextStates;
     [SerializeField] bool canSwitchState = true;
+    [Space]
+    public int overlayLayer = 31;
+
     [Header("Appearance by Particle Type")]
     public ParticleType[] particleTypes;
 
@@ -26,12 +30,13 @@ public class TrackVisualizer : MonoBehaviour
 
     [Header("Track Visualization")]
     public Material trackMat;
-    public Gradient trackColor;
     public float trackWidth = 0.04f;
     public float scale = 1f;
     [Space]
+    public Gradient errorTrackColor;
+    [Space]
     public float reconstructionPoint;
-    public float playBackDuration = 1f;
+    public float playBackSpeed = 0.25f;
 
     [Header("File Management")]
     public string fileDirectory = "Belle2Tracks/"; //folder in the Resources folder where the track data files are located
@@ -128,22 +133,18 @@ public class TrackVisualizer : MonoBehaviour
                     //create a new line renderer
                     GameObject spawn = new GameObject("Lr " + particleName + ": " + id.ToString());
                     spawn.transform.parent = this.transform;
+                    spawn.layer = overlayLayer; //place the line renderers on a layer, so that it can be overlayed on the screen
                     spawn.transform.localPosition = Vector3.zero;//Reset transform so that the visualization runs correctly in local space. 
                     spawn.transform.localRotation = Quaternion.identity;
+                    spawn.transform.localScale = Vector3.one;
 
                     LineRenderer lr = spawn.AddComponent<LineRenderer>();
                     lr.material = trackMat;
+                    lr.positionCount = 0;
+                    lr.useWorldSpace = false;
                     lr.startWidth = trackWidth;
                     lr.endWidth = trackWidth;
-                    lr.useWorldSpace = false;
-
-                    //set random color for trail
-                    float rand = Random.Range(-1f, 2f);
-                    if (rand < 0f)
-                        rand += 1f;
-                    else if (rand > 1f)
-                        rand -= 1f;
-                    lr.colorGradient = trackColor;
+                    lr.textureMode = LineTextureMode.Tile;
 
                     trackLines.Add(id, lr);
                 }
@@ -202,26 +203,22 @@ public class TrackVisualizer : MonoBehaviour
         ResetParticles();
 
         //animate track length
-        reconstructionPoint += 1f / playBackDuration * Time.deltaTime;
-        if (reconstructionPoint >= 1f)
+        if(playBackSpeed != 0) 
+        {
+            reconstructionPoint += playBackSpeed * Time.deltaTime;
+        }
+        if (reconstructionPoint > 1f)
             reconstructionPoint = 0f;
+        else if (reconstructionPoint < 0f)
+            reconstructionPoint = 1f;
 
         for (int i = 0; i < trackData.Count; i++)
         {
-            //create tracks
-            int count = (int)(trackData[i].trackPoints.Count * reconstructionPoint);
-            trackLines[i].positionCount = count;
-
-            for (int j = 0; j < count; j++)
-            {
-                trackLines[i].SetPosition(j, trackData[i].trackPoints[j] * scale);
-            }
-
             //create particle
             //check if the particle has a corresponding entry in particleTypes. Use error particles if no entry is found
             ParticleSystem ps = errorPS;
             ParticleSystem.Particle[] psParticles = errorParticles;
-            Gradient trailCol = trackColor; //Color of the particle trail
+            Gradient trailCol = errorTrackColor; //Default color of the particle trail
 
             for (int j = 0; j < particleTypes.Length; j++)
             {
@@ -242,11 +239,21 @@ public class TrackVisualizer : MonoBehaviour
             int alivePat = ps.GetParticles(psParticles);
             psParticles[alivePat - 1].startLifetime = Mathf.Infinity;
 
+            int count = (int)(trackData[i].trackPoints.Count * reconstructionPoint);
             int posIndex = Mathf.Clamp(count - 1, 0, 1000000000); //select last point in the list. Clamp to prevent index from becoming negative
             psParticles[alivePat - 1].position = trackData[i].trackPoints[posIndex] * scale;
 
             //apply changes to particle system
             ps.SetParticles(psParticles, alivePat);
+
+            //create tracks
+            trackLines[i].positionCount = count;
+            trackLines[i].colorGradient = trailCol;
+
+            for (int j = 0; j < count; j++)
+            {
+                trackLines[i].SetPosition(j, trackData[i].trackPoints[count - 1 - j] * scale);
+            }
         }
     }
 

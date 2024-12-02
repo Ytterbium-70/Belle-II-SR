@@ -218,8 +218,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 309222919}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.106754065, y: 0.43240067, z: -0.051642414, w: 0.89384913}
-  m_LocalPosition: {x: -8.93, y: 2.76, z: -7.07}
+  m_LocalRotation: {x: 0.05711399, y: 0.7676347, z: -0.06908843, w: 0.6345879}
+  m_LocalPosition: {x: -8.93, y: 1.65, z: 1.71}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4699,6 +4699,10 @@ PrefabInstance:
       value: event003_tracks
       objectReference: {fileID: 0}
     - target: {fileID: 3015826030456628053, guid: 344e0624f11e4eb44838814b2ce256ae, type: 3}
+      propertyPath: trackMat
+      value: 
+      objectReference: {fileID: 2100000, guid: 0d1ef6c97614f8c4eb81c76c2cadb699, type: 2}
+    - target: {fileID: 3015826030456628053, guid: 344e0624f11e4eb44838814b2ce256ae, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
@@ -4725,6 +4729,26 @@ PrefabInstance:
     - target: {fileID: 3015826030456628053, guid: 344e0624f11e4eb44838814b2ce256ae, type: 3}
       propertyPath: trackColor.key1.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3015826030456628053, guid: 344e0624f11e4eb44838814b2ce256ae, type: 3}
+      propertyPath: errorTrackColor.key0.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3015826030456628053, guid: 344e0624f11e4eb44838814b2ce256ae, type: 3}
+      propertyPath: errorTrackColor.key0.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3015826030456628053, guid: 344e0624f11e4eb44838814b2ce256ae, type: 3}
+      propertyPath: errorTrackColor.key0.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3015826030456628053, guid: 344e0624f11e4eb44838814b2ce256ae, type: 3}
+      propertyPath: errorTrackColor.key1.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3015826030456628053, guid: 344e0624f11e4eb44838814b2ce256ae, type: 3}
+      propertyPath: errorTrackColor.key1.g
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3490919117672258243, guid: 344e0624f11e4eb44838814b2ce256ae, type: 3}
       propertyPath: m_LocalPosition.x
