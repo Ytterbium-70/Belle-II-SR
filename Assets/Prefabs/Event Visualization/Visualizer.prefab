@@ -3787,8 +3787,8 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   trackWidth: 0.04
   scale: 0.025
-  pointsToReconstruct: 0
-  playBackSpeed: 100
+  reconstructionPoint: 0
+  playBackDuration: 3
   fileDirectory: Belle2Tracks/
   fileName: 
   extractedData: []

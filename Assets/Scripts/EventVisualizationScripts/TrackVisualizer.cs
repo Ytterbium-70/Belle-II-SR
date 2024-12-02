@@ -30,9 +30,8 @@ public class TrackVisualizer : MonoBehaviour
     public float trackWidth = 0.04f;
     public float scale = 1f;
     [Space]
-    public float pointsToReconstruct;
-    public float playBackSpeed = 100f;
-    float highestPointsToReconstruct;
+    public float reconstructionPoint;
+    public float playBackDuration = 1f;
 
     [Header("File Management")]
     public string fileDirectory = "Belle2Tracks/"; //folder in the Resources folder where the track data files are located
@@ -152,14 +151,6 @@ public class TrackVisualizer : MonoBehaviour
 
             line += 1;
         }
-
-        //determine highestPointsToReconstruct
-        highestPointsToReconstruct = 0f;
-        for (int i = 0; i < trackData.Count; i++)
-        {
-            if (trackData[i].trackPoints.Count > highestPointsToReconstruct)
-                highestPointsToReconstruct = trackData[i].trackPoints.Count;
-        }
     }
 
     void CreateParticleSystems()
@@ -211,17 +202,14 @@ public class TrackVisualizer : MonoBehaviour
         ResetParticles();
 
         //animate track length
-        pointsToReconstruct += playBackSpeed * Time.deltaTime;
-        if (pointsToReconstruct > highestPointsToReconstruct)
-            pointsToReconstruct = 0f;
-
-        //make sure pointsToReconstruct isn't negative
-        pointsToReconstruct = Mathf.Clamp(pointsToReconstruct, 0, 1000000);
+        reconstructionPoint += 1f / playBackDuration * Time.deltaTime;
+        if (reconstructionPoint >= 1f)
+            reconstructionPoint = 0f;
 
         for (int i = 0; i < trackData.Count; i++)
         {
             //create tracks
-            int count = Mathf.Clamp(trackData[i].trackPoints.Count, 0, (int)pointsToReconstruct);
+            int count = (int)(trackData[i].trackPoints.Count * reconstructionPoint);
             trackLines[i].positionCount = count;
 
             for (int j = 0; j < count; j++)
@@ -230,7 +218,6 @@ public class TrackVisualizer : MonoBehaviour
             }
 
             //create particle
-
             //check if the particle has a corresponding entry in particleTypes. Use error particles if no entry is found
             ParticleSystem ps = errorPS;
             ParticleSystem.Particle[] psParticles = errorParticles;
@@ -255,7 +242,7 @@ public class TrackVisualizer : MonoBehaviour
             int alivePat = ps.GetParticles(psParticles);
             psParticles[alivePat - 1].startLifetime = Mathf.Infinity;
 
-            int posIndex = Mathf.Clamp(count - 1, 0, (int)highestPointsToReconstruct); //select last point in the list. Clamp to prevent index from becoming negative
+            int posIndex = Mathf.Clamp(count - 1, 0, 1000000000); //select last point in the list. Clamp to prevent index from becoming negative
             psParticles[alivePat - 1].position = trackData[i].trackPoints[posIndex] * scale;
 
             //apply changes to particle system
@@ -303,7 +290,7 @@ public class TrackVisualizer : MonoBehaviour
 
     void ResetTrackVisualization()
     {
-        pointsToReconstruct = 0f;
+        reconstructionPoint = 0f;
 
         //reset line renderers
         if (!canSwitchState)
