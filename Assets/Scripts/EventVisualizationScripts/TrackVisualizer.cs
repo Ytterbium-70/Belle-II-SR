@@ -36,7 +36,7 @@ public class TrackVisualizer : MonoBehaviour
     public Gradient errorTrackColor;
     [Space]
     public float reconstructionPoint;
-    public float playBackSpeed = 0.25f;
+    public float playbackSpeed = 0.25f;
 
     [Header("File Management")]
     public string fileDirectory = "Belle2Tracks/"; //folder in the Resources folder where the track data files are located
@@ -203,9 +203,9 @@ public class TrackVisualizer : MonoBehaviour
         ResetParticles();
 
         //animate track length
-        if(playBackSpeed != 0) 
+        if(playbackSpeed != 0) 
         {
-            reconstructionPoint += playBackSpeed * Time.deltaTime;
+            reconstructionPoint += playbackSpeed * Time.deltaTime;
         }
         if (reconstructionPoint > 1f)
             reconstructionPoint = 0f;

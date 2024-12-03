@@ -24,8 +24,8 @@ public class EventManager : MonoBehaviour
     [Header("File management")]
     public string eventFileDirectory = "Belle2ParticleEvents/";
     public string trackFileDirectory = "Belle2Tracks/";
-    List<string> eventFileNames = new List<string>();
-    List<string> trackFileNames = new List<string>();
+    [SerializeField] List<string> eventFileNames = new List<string>();
+    [SerializeField] List<string> trackFileNames = new List<string>();
     int fileIndex;
 
     GameManager gm;
@@ -71,6 +71,7 @@ public class EventManager : MonoBehaviour
 
             if (!pauseEvent)
             {
+                playbackSpeed = Mathf.Clamp(playbackSpeed, -10f, 10f);
                 eViz.playbackSpeed = playbackSpeed;
             }
             else 
@@ -87,11 +88,12 @@ public class EventManager : MonoBehaviour
         {
             //make a list of the track files in the Resources directory
             LoadFiles(trackFileDirectory, ref trackFileNames);
-            //DisplayName(trackFileNames, fileIndex, ref trackNameText);
+            DisplayName(trackFileNames, fileIndex, ref trackNameText);
 
             if (!pauseEvent)
             {
-                eViz.playbackSpeed = playbackSpeed;
+                playbackSpeed = Mathf.Clamp(playbackSpeed, -1f, 1f);
+                tViz.playbackSpeed = playbackSpeed;
             }
             else
             {
@@ -114,12 +116,13 @@ public class EventManager : MonoBehaviour
         {
             fileNameList.Add(allFiles[i].name);
         }
+        fileNameList.Sort();
 
         //Make sure fileIndex is still within range
         fileIndex = Mathf.Clamp(fileIndex, 0, fileNameList.Count - 1);
     }
 
-    void DisplayName(List<string> fileNameList, int index, ref TMP_Text displayText) 
+    void DisplayName(List<string> fileNameList, int index, ref TMP_Text displayText, string textToRemove = "_tracks") 
     {
         //Change Display Name
         string fileName = fileNameList[index];
@@ -135,6 +138,8 @@ public class EventManager : MonoBehaviour
                 selectedFileDisplayName += fileName[i].ToString();
             }
         }
+        //remove _tracks ending
+        selectedFileDisplayName = selectedFileDisplayName.Replace(textToRemove, "");
 
         //display file name
         if (displayText != null)
@@ -165,7 +170,14 @@ public class EventManager : MonoBehaviour
         }
         else if (gm.state == GameStates.TRACKS)
         {
-            //loop using number of track files
+            if (fileIndex < 0)
+            {
+                fileIndex = trackFileNames.Count - 1;
+            }
+            else if (fileIndex > trackFileNames.Count - 1)
+            {
+                fileIndex = 0;
+            }
         }
         else //probably not neccessary, but reset if the file index is somehow changed in a different GameState
         {
@@ -187,15 +199,24 @@ public class EventManager : MonoBehaviour
         }
         else if (gm.state == GameStates.TRACKS) 
         {
-            //for now use event003. Change later once the UI elements are done
             //check if the tracks have a corresponding event
-            pViz.fileName = "event003";
-            tViz.fileName = "event003_tracks";
+            string tFileName = trackFileNames[fileIndex];
+            string pFileName = tFileName.Replace("_tracks", "");
 
-            pViz.ChangeState(VisualizationState.INACTIVE);
-            pViz.ChangeState(VisualizationState.LOADING);
-            tViz.ChangeState(VisualizationState.INACTIVE);
-            tViz.ChangeState(VisualizationState.LOADING);
+            if (eventFileNames.Contains(pFileName)) 
+            {
+                //only play if the selected event is different from the already playing event, in order to avoid the same event being called multiple times
+                if (tViz.fileName != tFileName) 
+                {
+                    pViz.fileName = pFileName;
+                    tViz.fileName = tFileName;
+
+                    pViz.ChangeState(VisualizationState.INACTIVE);
+                    pViz.ChangeState(VisualizationState.LOADING);
+                    tViz.ChangeState(VisualizationState.INACTIVE);
+                    tViz.ChangeState(VisualizationState.LOADING);
+                }
+            }
         }
 
         pauseEvent = false;
@@ -237,11 +258,25 @@ public class EventManager : MonoBehaviour
         //change speed
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            ChangePlaybackSpeed(-0.5f);
+            if (gm.state == GameStates.EVENTS)
+            {
+                ChangePlaybackSpeed(-0.5f);
+            }
+            else if (gm.state == GameStates.TRACKS) 
+            {
+                ChangePlaybackSpeed(-0.1f);
+            }
         }
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            ChangePlaybackSpeed(0.5f);
+            if (gm.state == GameStates.EVENTS)
+            {
+                ChangePlaybackSpeed(0.5f);
+            }
+            else if (gm.state == GameStates.TRACKS)
+            {
+                ChangePlaybackSpeed(0.1f);
+            }
         }
 
         //pause event
