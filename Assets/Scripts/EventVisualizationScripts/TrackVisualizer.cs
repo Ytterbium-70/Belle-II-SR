@@ -261,47 +261,58 @@ public class TrackVisualizer : MonoBehaviour
     {
         for (int i = 0; i < particleTypes.Length; i++)
         {
-            //update particles
-            if (particleTypes[i].psParticles == null || particleTypes[i].psParticles.Length < particleTypes[i].ps.main.maxParticles)
+            if (particleTypes[i].ps != null)
             {
-                particleTypes[i].psParticles = new ParticleSystem.Particle[particleTypes[i].ps.main.maxParticles];
-            }
+                //update particles
+                if (particleTypes[i].psParticles == null || particleTypes[i].psParticles.Length < particleTypes[i].ps.main.maxParticles)
+                {
+                    particleTypes[i].psParticles = new ParticleSystem.Particle[particleTypes[i].ps.main.maxParticles];
+                }
 
-            //Clear all existing particles
-            int alivePat = particleTypes[i].ps.GetParticles(particleTypes[i].psParticles);
-            for (int j = 0; j < alivePat; j++)
+                //Clear all existing particles
+                int alivePat = particleTypes[i].ps.GetParticles(particleTypes[i].psParticles);
+                for (int j = 0; j < alivePat; j++)
+                {
+                    particleTypes[i].psParticles[j].startLifetime = 0f;
+                    particleTypes[i].psParticles[j].remainingLifetime = 0f;
+                }
+
+                //apply changes to particle system
+                particleTypes[i].ps.SetParticles(particleTypes[i].psParticles, alivePat);
+            }
+        }
+
+        if (errorPS != null)
+        {
+            //update error particles
+            if (errorParticles == null || errorParticles.Length < errorPS.main.maxParticles)
             {
-                particleTypes[i].psParticles[j].startLifetime = 0f;
-                particleTypes[i].psParticles[j].remainingLifetime = 0f;
+                errorParticles = new ParticleSystem.Particle[errorPS.main.maxParticles];
             }
-
+            //Clear all existing error particles
+            int errorAlivePat = errorPS.GetParticles(errorParticles);
+            for (int j = 0; j < errorAlivePat; j++)
+            {
+                errorParticles[j].startLifetime = 0f;
+                errorParticles[j].remainingLifetime = 0f;
+            }
             //apply changes to particle system
-            particleTypes[i].ps.SetParticles(particleTypes[i].psParticles, alivePat);
+            errorPS.SetParticles(errorParticles, errorAlivePat);
         }
-
-        //update error particles
-        if (errorParticles == null || errorParticles.Length < errorPS.main.maxParticles)
-        {
-            errorParticles = new ParticleSystem.Particle[errorPS.main.maxParticles];
-        }
-        //Clear all existing error particles
-        int errorAlivePat = errorPS.GetParticles(errorParticles);
-        for (int j = 0; j < errorAlivePat; j++)
-        {
-            errorParticles[j].startLifetime = 0f;
-            errorParticles[j].remainingLifetime = 0f;
-        }
-        //apply changes to particle system
-        errorPS.SetParticles(errorParticles, errorAlivePat);
     }
 
     void ResetTrackVisualization()
     {
-        reconstructionPoint = 0f;
-
-        //reset line renderers
         if (!canSwitchState)
         {
+            Debug.Log("Resetting Path Visualization");
+
+            reconstructionPoint = 0f;
+
+            //delete particles
+            ResetParticles();
+
+            //reset line renderers
             foreach (LineRenderer lr in trackLines.Values)
             {
                 lr.positionCount = 0;
