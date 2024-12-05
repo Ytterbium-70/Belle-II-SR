@@ -8954,6 +8954,8 @@ MonoBehaviour:
   eventNameText: {fileID: 1109394494}
   trackNameText: {fileID: 0}
   playbackSpeed: 5
+  defaultEventPlaybackSpeed: 5
+  defaultTrackPlaybackSpeed: 0.5
   eventPlaybackText: {fileID: 2038427903216338227}
   trackPlaybackText: {fileID: 0}
   eventFileDirectory: Belle2ParticleEvents/

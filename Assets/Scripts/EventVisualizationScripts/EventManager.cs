@@ -15,8 +15,14 @@ public class EventManager : MonoBehaviour
     public TMP_Text eventNameText;
     public TMP_Text trackNameText;
 
-    [Header("´Playback Display Settings")]
+    [Header("Playback Display Settings")]
     public float playbackSpeed = 5f;
+    
+    [Space]
+    public float defaultEventPlaybackSpeed = 5f;
+    public float defaultTrackPlaybackSpeed = 0.5f;
+
+    [Space]
     public TMP_Text eventPlaybackText;
     public TMP_Text trackPlaybackText;
     bool pauseEvent = false;
@@ -29,10 +35,12 @@ public class EventManager : MonoBehaviour
     int fileIndex;
 
     GameManager gm;
+    GameStates lastState;
 
     private void Start()
     {
         gm = gameObject.GetComponent<GameManager>();
+        lastState = gm.state;
 
         eViz = visualizer.GetComponent<EventVisualizer>();
         eViz.fileName = "";
@@ -49,6 +57,8 @@ public class EventManager : MonoBehaviour
 
     void Update()
     {
+        ResetPlaybackSpeed();
+
         if (gm.state == GameStates.EVENTS || gm.state == GameStates.TRACKS) 
         {
             KeyboardInput();
@@ -86,7 +96,8 @@ public class EventManager : MonoBehaviour
 
         if (gm.state == GameStates.TRACKS)
         {
-            //make a list of the track files in the Resources directory
+            //make a list of the event and track files in the Resources directory. A list of event files is required in order to compare it with the track files
+            LoadFiles(eventFileDirectory, ref eventFileNames, false);
             LoadFiles(trackFileDirectory, ref trackFileNames);
             DisplayName(trackFileNames, fileIndex, ref trackNameText);
 
@@ -107,7 +118,25 @@ public class EventManager : MonoBehaviour
         }
     }
 
-    void LoadFiles(string directory, ref List<string> fileNameList) 
+    void ResetPlaybackSpeed() 
+    {
+        //set the playback speed to the default values upon entering event or track state
+        if (lastState != gm.state) 
+        {
+            lastState = gm.state;
+
+            if (lastState == GameStates.EVENTS)
+            {
+                playbackSpeed = defaultEventPlaybackSpeed;
+            }
+            else if (lastState == GameStates.TRACKS) 
+            {
+                playbackSpeed = defaultTrackPlaybackSpeed;
+            }
+        }
+    }
+
+    void LoadFiles(string directory, ref List<string> fileNameList, bool clampFileIndex = true) 
     {
         //make a list of the track files in the Resources directory
         fileNameList = new List<string>();
@@ -118,8 +147,11 @@ public class EventManager : MonoBehaviour
         }
         fileNameList.Sort();
 
-        //Make sure fileIndex is still within range
-        fileIndex = Mathf.Clamp(fileIndex, 0, fileNameList.Count - 1);
+        if (clampFileIndex) 
+        {
+            //Make sure fileIndex is still within range
+            fileIndex = Mathf.Clamp(fileIndex, 0, fileNameList.Count - 1);
+        }
     }
 
     void DisplayName(List<string> fileNameList, int index, ref TMP_Text displayText, string textToRemove = "_tracks") 
