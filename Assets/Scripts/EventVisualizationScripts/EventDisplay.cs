@@ -40,10 +40,10 @@ public class EventDisplay : MonoBehaviour
     
     void Update()
     {
-        if (gm.state == GameStates.EVENTS) 
+        if (gm.state == GameStates.EVENTS)
         {
             //the file names have to be filled first, so only check for the file names once it's done
-            if (em.eventFileNames.Count > 0) 
+            if (em.eventFileNames.Count > 0)
             {
                 string fileName = em.eventFileNames[em.fileIndex];
 
@@ -71,7 +71,7 @@ public class EventDisplay : MonoBehaviour
                         }
                     }
 
-                    if (!foundFile) 
+                    if (!foundFile)
                     {
                         //display nothing
                         equationDisplay.gameObject.SetActive(false);
@@ -79,6 +79,11 @@ public class EventDisplay : MonoBehaviour
                     }
                 }
             }
+        }
+        else 
+        {
+            equationDisplay.gameObject.SetActive(false);
+            feynmanDisplay.gameObject.SetActive(false);
         }
     }
 

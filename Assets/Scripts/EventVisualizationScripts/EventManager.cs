@@ -101,6 +101,16 @@ public class EventManager : MonoBehaviour
             LoadFiles(trackFileDirectory, ref trackFileNames);
             DisplayName(trackFileNames, fileIndex, ref trackNameText);
 
+            //display playback speed
+            if (trackPlaybackText != null)
+            {
+                trackPlaybackText.text = playbackSpeed.ToString("0.0");
+            }
+            else
+            {
+                Debug.Log("Text Mesh missing on EventManager");
+            }
+
             if (!pauseEvent)
             {
                 playbackSpeed = Mathf.Clamp(playbackSpeed, -1f, 1f);
@@ -108,7 +118,7 @@ public class EventManager : MonoBehaviour
             }
             else
             {
-                eViz.playbackSpeed = 0f;
+                tViz.playbackSpeed = 0f;
             }
         }
         else 
@@ -254,9 +264,22 @@ public class EventManager : MonoBehaviour
         pauseEvent = false;
     }
 
-    public void ChangePlaybackSpeed(float changeAmount) 
+    public void ChangePlaybackSpeed(float changeDir = 1f) 
     {
-        playbackSpeed += changeAmount;
+        if (changeDir > 0)
+        {
+            if (gm.state == GameStates.EVENTS)
+                playbackSpeed += 1;
+            else if (gm.state == GameStates.TRACKS)
+                playbackSpeed += 0.1f;
+        }
+        else if (changeDir < 0) 
+        {
+            if (gm.state == GameStates.EVENTS)
+                playbackSpeed -= 1;
+            else if (gm.state == GameStates.TRACKS)
+                playbackSpeed -= 0.1f;
+        }
     }
 
     public void ChangePlaybackDirection(int direction = 1) 
