@@ -379,6 +379,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4755822832820441270}
+  - component: {fileID: 4113520937445478526}
   m_Layer: 0
   m_Name: Displays
   m_TagString: Untagged
@@ -403,6 +404,131 @@ Transform:
   - {fileID: 6469669069067635981}
   m_Father: {fileID: 6454646067068287801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4113520937445478526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4944888237338715123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb2e0c09ada5b07469d181a1a5adbc39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventTextures:
+  - eventFileNames:
+    - event300
+    - event301
+    - event302
+    decayEquation: {fileID: 21300000, guid: 1454141ef73c25e4eaea8c6cf1437fad, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: 05929abe390772442afc24a3f05f85f0, type: 3}
+  - eventFileNames:
+    - event310
+    - event311
+    - event312
+    decayEquation: {fileID: 21300000, guid: 4d19b6ffe98e9ac4fa3b7d35f741ab9d, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: c7f0f551cc9dabc459242d8defe10524, type: 3}
+  - eventFileNames:
+    - event320
+    - event321
+    - event322
+    decayEquation: {fileID: 21300000, guid: 5ba79379eb50e0943b1ad8b7cdc2ed48, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: d70fecc81b302eb4b82e26e9b33dc28d, type: 3}
+  - eventFileNames:
+    - event330
+    - event331
+    - event332
+    decayEquation: {fileID: 21300000, guid: 55664d2798ed7284d82a11ab2c9adfc8, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: 5a0fc0117aec90546a245e8afc274c9f, type: 3}
+  - eventFileNames:
+    - event340
+    - event341
+    - event342
+    decayEquation: {fileID: 21300000, guid: af9e53819a110d1428104f1e281ff4b0, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: bcd95dca16613144786358c200a920a9, type: 3}
+  - eventFileNames:
+    - event350
+    - event351
+    - event352
+    decayEquation: {fileID: 21300000, guid: d32592ff0e4f0994e9a642d855eaec77, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: 124a14684f302c049be780b62d4a5259, type: 3}
+  - eventFileNames:
+    - event360
+    - event361
+    - event362
+    decayEquation: {fileID: 21300000, guid: df0a967e144174b42b3de8fad6488615, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: 41bb20b7b9bef024c975e861fe870f3a, type: 3}
+  - eventFileNames:
+    - event370
+    - event371
+    - event372
+    decayEquation: {fileID: 21300000, guid: b42a357574eeda54da81bf47df987d8e, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: de9fefdca88c9f841bc6c389550ebab8, type: 3}
+  - eventFileNames:
+    - event380
+    - event381
+    - event382
+    decayEquation: {fileID: 21300000, guid: 781619990618eca479a34aeff601c7c5, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: 2e7aa02685876ec49887dd1e32dd8d7a, type: 3}
+  - eventFileNames:
+    - event390
+    - event391
+    - event392
+    decayEquation: {fileID: 21300000, guid: 94d3e862cd9faf54280799dcf3ca1ef0, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: 9f9a6d2f08bf0b645b48970be53f2be5, type: 3}
+  - eventFileNames:
+    - event400
+    - event401
+    - event402
+    decayEquation: {fileID: 21300000, guid: 3b496499d70272a49bbc267d688cc6cc, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: 20ced93f566e5fc4d8eb7b20d19c8dc6, type: 3}
+    - {fileID: 21300000, guid: 23d12a40d872dbd419bbb1375c736054, type: 3}
+    - {fileID: 21300000, guid: 5cc2d82698eb1d042890df468c293267, type: 3}
+    - {fileID: 21300000, guid: 4460ba34eaed2864d87a244c3b0a177b, type: 3}
+  - eventFileNames:
+    - event410
+    - event411
+    - event412
+    decayEquation: {fileID: 21300000, guid: a517a56c01d4d6d4fbe21a53159add4c, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: e411f0d411ea5014d9cce470c078a258, type: 3}
+    - {fileID: 21300000, guid: ae130e3be8f3be64aaae858864794d0f, type: 3}
+    - {fileID: 21300000, guid: 2b5fa34d3faadf34eaa5ee0c000258ea, type: 3}
+    - {fileID: 21300000, guid: 204192eda72610f46b20a6ed399a3717, type: 3}
+  - eventFileNames:
+    - event420
+    - event421
+    - event422
+    decayEquation: {fileID: 21300000, guid: c71110e058b1bd842954e9501de18cd7, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: 5a713ef54ecf8bb44a1801819c80a2b5, type: 3}
+    - {fileID: 21300000, guid: 29b4afee6e9d1924bbcc2b6d50204005, type: 3}
+    - {fileID: 21300000, guid: 1ef29dd74df47ce4586b138e9dcb8069, type: 3}
+    - {fileID: 21300000, guid: c0b07da307c16924bb01c3513527a797, type: 3}
+  - eventFileNames:
+    - event430
+    - event431
+    - event432
+    decayEquation: {fileID: 21300000, guid: 17d99c5f064b7e04cae0fbc0d134754a, type: 3}
+    feynmanDiagrams:
+    - {fileID: 21300000, guid: fcf54625584bf0d43840c1899b2b885c, type: 3}
+    - {fileID: 21300000, guid: ad864b52ed3972c40aeca89a7fb2554c, type: 3}
+    - {fileID: 21300000, guid: f93d97f6bca8345419f8a9a0576a0088, type: 3}
+    - {fileID: 21300000, guid: 5b0b35cfdff23834d9f364b0fd29c4fe, type: 3}
+  equationDisplay: {fileID: 1814445014959201460}
+  feynmanDisplay: {fileID: 12911538117611431}
 --- !u!1 &8649911186133794833
 GameObject:
   m_ObjectHideFlags: 0

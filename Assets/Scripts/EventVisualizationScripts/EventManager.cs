@@ -30,9 +30,9 @@ public class EventManager : MonoBehaviour
     [Header("File management")]
     public string eventFileDirectory = "Belle2ParticleEvents/";
     public string trackFileDirectory = "Belle2Tracks/";
-    [SerializeField] List<string> eventFileNames = new List<string>();
-    [SerializeField] List<string> trackFileNames = new List<string>();
-    int fileIndex;
+    public List<string> eventFileNames = new List<string>(); //these variables have to be public, since the EventDisplay script uses them
+    public List<string> trackFileNames = new List<string>();
+    public int fileIndex;
 
     GameManager gm;
     GameStates lastState;

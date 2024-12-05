@@ -41,6 +41,11 @@ public class RingCreator : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        lr.positionCount = 0;
+    }
+
     private void OnDrawGizmosSelected()
     {
         int segCount = Mathf.RoundToInt(segmentsPerRadius * radius);

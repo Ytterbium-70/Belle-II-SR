@@ -8962,6 +8962,7 @@ MonoBehaviour:
   trackFileDirectory: Belle2Tracks/
   eventFileNames: []
   trackFileNames: []
+  fileIndex: 0
 --- !u!114 &2037895283
 MonoBehaviour:
   m_ObjectHideFlags: 0
