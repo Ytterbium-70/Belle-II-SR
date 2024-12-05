@@ -245,18 +245,22 @@ public class EventManager : MonoBehaviour
             string tFileName = trackFileNames[fileIndex];
             string pFileName = tFileName.Replace("_tracks", "");
 
-            if (eventFileNames.Contains(pFileName)) 
+            //only play if the selected event is different from the already playing event, in order to avoid the same event being called multiple times
+            if (tViz.fileName != tFileName)
             {
-                //only play if the selected event is different from the already playing event, in order to avoid the same event being called multiple times
-                if (tViz.fileName != tFileName) 
+                tViz.fileName = tFileName;
+                tViz.ChangeState(VisualizationState.INACTIVE);
+                tViz.ChangeState(VisualizationState.LOADING);
+
+                if (eventFileNames.Contains(pFileName))
                 {
                     pViz.fileName = pFileName;
-                    tViz.fileName = tFileName;
-
                     pViz.ChangeState(VisualizationState.INACTIVE);
                     pViz.ChangeState(VisualizationState.LOADING);
-                    tViz.ChangeState(VisualizationState.INACTIVE);
-                    tViz.ChangeState(VisualizationState.LOADING);
+                }
+                else 
+                {
+                    pViz.ChangeState(VisualizationState.INACTIVE);
                 }
             }
         }
