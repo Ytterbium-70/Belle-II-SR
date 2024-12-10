@@ -19,7 +19,6 @@ public class DetectorSizeManager : MonoBehaviour
 
     public int currentSCIndex = 0;
     float currentScale;
-    float smallestSizeClass;
 
     [Header("Event View Settings")]
     public float eventSizeClass = 1f;
@@ -42,14 +41,6 @@ public class DetectorSizeManager : MonoBehaviour
 
             DetectorColorController dcc = componentForEachSC[i].GetComponent<DetectorColorController>();
             DCCsforComponents.Add(dcc);
-        }
-
-        //find smallest sizeclass (used later in DESCRIPTION GameState)
-        smallestSizeClass = Mathf.Infinity;
-        foreach (float s in sizeClasses) 
-        {
-            if(s < smallestSizeClass)
-                smallestSizeClass = s;
         }
     }
 
