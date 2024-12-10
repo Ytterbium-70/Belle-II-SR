@@ -291,9 +291,9 @@ public class EventManager : MonoBehaviour
         playbackSpeed = Mathf.Abs(playbackSpeed) * direction;
     }
 
-    public void PauseEvent() 
+    public void PauseEvent(bool pause) 
     {
-        pauseEvent = !pauseEvent;
+        pauseEvent = pause;
     }
 
     void KeyboardInput() 
@@ -341,7 +341,7 @@ public class EventManager : MonoBehaviour
         //pause event
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
-            PauseEvent();
+            PauseEvent(!pauseEvent);
         }
     }
 }
