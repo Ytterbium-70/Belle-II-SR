@@ -24,7 +24,7 @@ public class PlayerMovementManager : MonoBehaviour
     public GameObject[] buttonsToDeactivate_Tracks;
     public GameObject[] buttonsToDeactivate_Moving;
 
-    float delay;
+    float delay; //Delay to minimize errors from inconsistent contact: For some reason, the ultraeap handtracker seems to have inconsistent contact events. Sometimes, contact events are called multiple times per frame and often frames are skipped
 
     Vector3 currentPos;
     Vector3 moveDir;
